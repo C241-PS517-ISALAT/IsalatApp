@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">IsalatApp</string>
+    <string name="home">Home</string>
+    <string name="camera">Camera</string>
+    <string name="settings">Settings</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="welcome_to_sign_language_recognition_app">Welcome to Sign Language Recognition App</string>
+    <string name="upload">Upload</string>
+    <string name="gallery">Gallery</string>
+    <string name="image">Images</string>
+</resources>
