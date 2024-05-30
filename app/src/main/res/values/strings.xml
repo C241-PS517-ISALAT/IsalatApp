@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">Isalat App</string>
+    <string name="home">Home</string>
+    <string name="camera">Camera</string>
+    <string name="Account">Account</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="welcome_to_sign_language_recognition_app">Welcome to Sign Language Recognition App</string>
+    <string name="upload">Upload</string>
+    <string name="gallery">Gallery</string>
+    <string name="image">Images</string>
+    <string name="register_text">Register Here</string>
+    <string name="login">Log In</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="name">Name</string>
+    <string name="register">Register</string>
+    <string name="title_signup">Submit Your Data Here</string>
+    <string name="title_login">Please Log In Here</string>
+    <string name="login_text">Log In here</string>
+    <string name="logout">Log Out</string>
+    <string name="add_photo">Add Photo</string>
+    <string name="description">Description</string>
+    <string name="email_reminder">Please enter a valid email</string>
+    <string name="login_successful">Login Successful</string>
+    <string name="name_validasi">Name must be at least 4 characters</string>
+    <string name="registration_successful">Registration successful</string>
+    <string name="failed_login">Failed to Login: email or password does not exist in the database</string>
+    <string name="failed_register">Failed to Register: email or password already exists in the database</string>
+    <string name="password_caracter">Password must be at least %d characters</string>
+</resources>
