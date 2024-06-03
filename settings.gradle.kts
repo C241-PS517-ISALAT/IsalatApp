@@ -19,6 +19,10 @@ dependencyResolutionManagement {
     }
 }
 
+<<<<<<< HEAD
 rootProject.name = "IsalatApp"
+=======
+rootProject.name = "Isalat App"
+>>>>>>> origin/master
 include(":app")
  

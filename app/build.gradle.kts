@@ -4,11 +4,19 @@ plugins {
 }
 
 android {
+<<<<<<< HEAD
     namespace = "com.gusaja.isalatapp"
     compileSdk = 34
 
     defaultConfig {
         applicationId = "com.gusaja.isalatapp"
+=======
+    namespace = "com.isalatapp"
+    compileSdk = 34
+
+    defaultConfig {
+        applicationId = "com.isalatapp"
+>>>>>>> origin/master
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -36,6 +44,10 @@ android {
     buildFeatures {
         viewBinding = true
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master
 }
 
 dependencies {
@@ -51,6 +63,9 @@ dependencies {
 
     implementation("com.squareup.picasso:picasso:2.71828")
     implementation("androidx.exifinterface:exifinterface:1.3.6")
+<<<<<<< HEAD
     
 
+=======
+>>>>>>> origin/master
 }

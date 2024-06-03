@@ -9,7 +9,13 @@
         android:icon="@drawable/ic_camera"
         android:title="@string/camera" />
     <item
+<<<<<<< HEAD
         android:id="@+id/nav_settings"
         android:icon="@drawable/ic_settings"
         android:title="@string/settings" />
+=======
+        android:id="@+id/nav_account"
+        android:icon="@drawable/ic_person"
+        android:title="@string/Account" />
+>>>>>>> origin/master
 </menu>
