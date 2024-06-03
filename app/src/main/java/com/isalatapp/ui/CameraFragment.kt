@@ -1,5 +1,3 @@
-package com.isalatapp.ui
-
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -15,16 +13,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.isalatapp.databinding.FragmentCameraBinding
 import com.isalatapp.model.getImageUri
+import com.isalatapp.model.getVideoUri
 
 class CameraFragment : Fragment() {
     private var _binding:  FragmentCameraBinding? = null
     private val binding get() = _binding!!
 
     private var currentImageUri: Uri? = null
-
-//    private val viewModel by viewModels<AddStoryViewModel> {
-//        ViewModelFactory.getInstance()
-//    }
+    private var currentVideoUri: Uri? = null
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -38,7 +34,10 @@ class CameraFragment : Fragment() {
     private fun allPermissionsGranted() =
         ContextCompat.checkSelfPermission(
             requireContext(), REQUIRED_PERMISSION
-        ) == PackageManager.PERMISSION_GRANTED
+        ) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(
+                    requireContext(), REQUIRED_PERMISSION_STORAGE
+                ) == PackageManager.PERMISSION_GRANTED
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,11 +52,12 @@ class CameraFragment : Fragment() {
 
         if (!allPermissionsGranted()) {
             requestPermissionLauncher.launch(REQUIRED_PERMISSION)
+            requestPermissionLauncher.launch(REQUIRED_PERMISSION_STORAGE)
         }
 
         binding.btnGallery.setOnClickListener { startGallery() }
         binding.btnCamera.setOnClickListener { startCamera() }
-//        binding.btnUpload.setOnClickListener { uploadImage() }
+        binding.btnVideo.setOnClickListener { startVideoRecording() }
     }
 
     private fun startGallery() {
@@ -88,40 +88,41 @@ class CameraFragment : Fragment() {
         }
     }
 
+    private fun startVideoRecording() {
+        currentVideoUri = getVideoUri(requireContext())
+        launcherIntentVideo.launch(currentVideoUri)
+    }
+
+    private val launcherIntentVideo = registerForActivityResult(
+        ActivityResultContracts.CaptureVideo()
+    ) { isSuccess ->
+        if (isSuccess) {
+            showVideo()
+        }
+    }
+
     private fun showImage() {
         currentImageUri?.let {
             Log.d("Image URI", "showImage: $it")
             binding.previewImageView.setImageURI(it)
+            updatePreviewVisibility(true)
         }
     }
 
-//    private fun uploadImage() {
-//        currentImageUri?.let { uri ->
-//            val imageFile = uriToFile(uri, requireContext()).reduceFileImage()
-//            Log.d("Image File", "showImage: ${imageFile.path}")
-//            val description = "Ini adalah deskripsi gambar"
-//
-//            viewModel.uploadImage(imageFile, description).observe(viewLifecycleOwner) { result ->
-//                if (result != null) {
-//                    when (result) {
-//                        is ResultState.Loading -> {
-//                            showLoading(true)
-//                        }
-//
-//                        is ResultState.Success -> {
-//                            showToast(result.data.message)
-//                            showLoading(false)
-//                        }
-//
-//                        is ResultState.Error -> {
-//                            showToast(result.error)
-//                            showLoading(false)
-//                        }
-//                    }
-//                }
-//            }
-//        } ?: showToast(getString(R.string.empty_image_warning))
-//    }
+    private fun showVideo() {
+        currentVideoUri?.let {
+            Log.d("Video URI", "showVideo: $it")
+            binding.previewVideoView.setVideoURI(it)
+            binding.previewVideoView.start()
+            updatePreviewVisibility(false)
+        }
+    }
+
+    private fun updatePreviewVisibility(isImage: Boolean) {
+        binding.previewImageView.visibility = if (isImage) View.VISIBLE else View.GONE
+        binding.previewVideoView.visibility = if (isImage) View.GONE else View.VISIBLE
+    }
+
 
     private fun showLoading(isLoading: Boolean) {
         binding.progressIndicator.visibility = if (isLoading) View.VISIBLE else View.GONE
@@ -138,5 +139,6 @@ class CameraFragment : Fragment() {
 
     companion object {
         private const val REQUIRED_PERMISSION = Manifest.permission.CAMERA
+        private const val REQUIRED_PERMISSION_STORAGE = Manifest.permission.WRITE_EXTERNAL_STORAGE
     }
 }

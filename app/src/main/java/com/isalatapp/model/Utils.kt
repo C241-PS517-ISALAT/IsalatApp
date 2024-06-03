@@ -42,6 +42,14 @@ fun getImageUri(context: Context): Uri {
     return uri ?: getImageUriForPreQ(context)
 }
 
+fun getVideoUri(context: Context): Uri {
+    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+    val videoFileName = "VID_$timeStamp.mp4"
+    val videoStorageDir = context.getExternalFilesDir(Environment.DIRECTORY_MOVIES)
+    val videoFile = File.createTempFile(videoFileName, ".mp4", videoStorageDir)
+    return FileProvider.getUriForFile(context, "${context.applicationContext.packageName}.fileprovider", videoFile)
+}
+
 private fun getImageUriForPreQ(context: Context): Uri {
     val filesDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
     val imageFile = File(filesDir, "/MyCamera/$timeStamp.jpg")

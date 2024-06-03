@@ -27,4 +27,7 @@
     <string name="failed_login">Failed to Login: email or password does not exist in the database</string>
     <string name="failed_register">Failed to Register: email or password already exists in the database</string>
     <string name="password_caracter">Password must be at least %d characters</string>
+    <string name="Record">Record</string>
+    <string name="stop_recording">Stop Recording</string>
+    <string name="video">Video</string>
 </resources>

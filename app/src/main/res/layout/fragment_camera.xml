@@ -28,7 +28,23 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/btn_camera"
         android:contentDescription="@string/image"
-        app:srcCompat="@drawable/ic_place_holder" />
+        app:srcCompat="@drawable/ic_place_holder"
+
+
+        />
+
+    <VideoView
+        android:id="@+id/previewVideoView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btn_camera" />
 
     <Button
         android:id="@+id/btn_camera"
@@ -39,12 +55,22 @@
         app:layout_constraintStart_toStartOf="parent"/>
 
     <Button
+        android:id="@+id/btn_video"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/video"
+        app:layout_constraintTop_toBottomOf="@id/previewImageView"
+        app:layout_constraintLeft_toRightOf="@+id/btn_camera"
+        app:layout_constraintRight_toLeftOf="@+id/btn_gallery"/>
+
+    <Button
         android:id="@+id/btn_gallery"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/gallery"
         app:layout_constraintTop_toBottomOf="@id/previewImageView"
         app:layout_constraintEnd_toEndOf="parent"/>
+
 
     <Button
         android:id="@+id/btn_upload"
@@ -55,5 +81,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_gallery"/>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
