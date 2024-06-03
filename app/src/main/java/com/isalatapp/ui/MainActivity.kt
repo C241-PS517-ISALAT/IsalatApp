@@ -1,18 +1,18 @@
 package com.isalatapp.ui
 
-import CameraFragment
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.ObjectAnimator
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.isalatapp.R
 import com.isalatapp.auth.LoginFragment
 import com.isalatapp.databinding.ActivityMainBinding
+import com.isalatapp.ui.account.AccountFragment
+import com.isalatapp.ui.camera.CameraXFragment
+import com.isalatapp.ui.home.HomeFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.nav_camera -> {
-                    loadFragment(CameraFragment())
+                    loadFragment(CameraXFragment())
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.nav_account -> {
@@ -90,6 +90,15 @@ class MainActivity : AppCompatActivity() {
 
     fun showBottomNavigation() {
         binding.bottomNavigation.visibility = View.VISIBLE
+    }
+
+    fun openNewsUrl(view: View) {
+        val url = view.getTag(R.id.tvLink) as? String
+        url?.let {
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse(url)
+            startActivity(intent)
+        }
     }
 
 

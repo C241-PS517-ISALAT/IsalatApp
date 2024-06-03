@@ -1,3 +1,5 @@
+package com.isalatapp.ui.camera
+
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri

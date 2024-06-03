@@ -13,10 +13,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.isalatapp.R
 import com.isalatapp.databinding.FragmentRegisterBinding
-import com.isalatapp.ui.HomeFragment
+import com.isalatapp.ui.home.HomeFragment
 import com.isalatapp.ui.MainActivity
 
 class RegisterFragment : Fragment() {
