@@ -3,93 +3,107 @@ package com.isalatapp.auth
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.os.Bundle
+import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
-import androidx.fragment.app.Fragment
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.isalatapp.R
 import com.isalatapp.databinding.FragmentRegisterBinding
-import com.isalatapp.ui.home.HomeFragment
 import com.isalatapp.ui.MainActivity
+import com.isalatapp.ui.home.HomeFragment
+
 
 class RegisterFragment : Fragment() {
     private lateinit var binding: FragmentRegisterBinding
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
         binding = FragmentRegisterBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
-        binding.btnRegister.setOnClickListener{
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, HomeFragment())
-                .commit()
-        }
-
-        val loginText = getString(R.string.login_text)
-        val spannableString = SpannableStringBuilder("Already have an account, $loginText")
-        val startIndex = spannableString.indexOf(loginText)
-        val clickableSpan = object : ClickableSpan() {
-            override fun onClick(view: View) {
+        binding.apply {
+            btnRegister.setOnClickListener {
                 parentFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, LoginFragment())
-                    .commit()
+                    .replace(R.id.fragment_container, HomeFragment()).commit()
             }
 
-            override fun updateDrawState(ds: TextPaint) {
-                super.updateDrawState(ds)
-                ds.color = ContextCompat.getColor(requireContext(), R.color.blue)
+            val toLoginText = getString(R.string.to_login)
+            val spannableString = SpannableStringBuilder("Already have an account? $toLoginText")
+            val startIndex = spannableString.indexOf(toLoginText)
+            val clickableSpan = object : ClickableSpan() {
+                override fun onClick(view: View) {
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, LoginFragment()).commit()
+                }
+
+                override fun updateDrawState(ds: TextPaint) {
+                    super.updateDrawState(ds)
+                    ds.color = ContextCompat.getColor(requireContext(), R.color.primary)
+                }
             }
+
+            spannableString.setSpan(
+                clickableSpan,
+                startIndex,
+                startIndex + toLoginText.length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+
+            tvToLogin.text = spannableString
+            tvToLogin.movementMethod = LinkMovementMethod.getInstance()
+            setupView()
+            playAnimation()
         }
-
-        spannableString.setSpan(clickableSpan, startIndex, startIndex + loginText.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-
-        binding.tvLogin.text = spannableString
-        binding.tvLogin.movementMethod = LinkMovementMethod.getInstance()
-
-        playAnimation()
     }
 
     private fun playAnimation() {
-        binding.nameEditText.alpha = 0f
-        binding.emailEditText.alpha = 0f
-        binding.passwordEditText.alpha = 0f
-        binding.btnRegister.alpha = 0f
-        binding.tvLogin.alpha = 0f
+        binding.apply {
+            val labelHeading =
+                ObjectAnimator.ofFloat(labelHeading, View.ALPHA, 0f, 1f).setDuration(200)
+            val tvName = ObjectAnimator.ofFloat(tvName, View.ALPHA, 0f, 1f).setDuration(200)
+            val edLoginName =
+                ObjectAnimator.ofFloat(edlRegisterName, View.ALPHA, 0f, 1f).setDuration(200)
+            val tvEmail = ObjectAnimator.ofFloat(tvEmail, View.ALPHA, 0f, 1f).setDuration(200)
+            val edLoginEmail =
+                ObjectAnimator.ofFloat(edlRegisterEmail, View.ALPHA, 0f, 1f).setDuration(200)
+            val tvPassword = ObjectAnimator.ofFloat(tvPassword, View.ALPHA, 0f, 1f).setDuration(200)
+            val edLoginPassword =
+                ObjectAnimator.ofFloat(edlRegisterPassword, View.ALPHA, 0f, 1f).setDuration(200)
+            val btnRegister =
+                ObjectAnimator.ofFloat(btnRegister, View.ALPHA, 0f, 1f).setDuration(200)
+            val tvLogin = ObjectAnimator.ofFloat(tvToLogin, View.ALPHA, 0f, 1f).setDuration(200)
+            val tvPrivacyPolicy =
+                ObjectAnimator.ofFloat(tvPrivacyPolicy, View.ALPHA, 0f, 1f).setDuration(200)
 
-        ObjectAnimator.ofFloat(binding.imageView, View.TRANSLATION_X, -50f, 50f).apply {
-            duration = 5000
-            repeatCount = ObjectAnimator.INFINITE
-            repeatMode = ObjectAnimator.REVERSE
-        }.start()
-
-        val edLoginName = ObjectAnimator.ofFloat(binding.nameEditText, View.ALPHA, 0f, 1f).setDuration(200)
-        val edLoginEmail = ObjectAnimator.ofFloat(binding.emailEditText, View.ALPHA, 0f, 1f).setDuration(200)
-        val edLoginPassword = ObjectAnimator.ofFloat(binding.passwordEditText, View.ALPHA, 0f, 1f).setDuration(200)
-        val btnLogin = ObjectAnimator.ofFloat(binding.btnRegister, View.ALPHA, 0f, 1f).setDuration(200)
-        val tvRegister = ObjectAnimator.ofFloat(binding.tvLogin, View.ALPHA, 0f, 1f).setDuration(200)
-
-        AnimatorSet().apply {
-            playSequentially(
-                edLoginName,
-                edLoginEmail,
-                edLoginPassword,
-                btnLogin,
-                tvRegister
-            )
-            startDelay = 200
-        }.start()
+            AnimatorSet().apply {
+                playSequentially(
+                    labelHeading,
+                    tvName,
+                    edLoginName,
+                    tvEmail,
+                    edLoginEmail,
+                    tvPassword,
+                    edLoginPassword,
+                    btnRegister,
+                    tvLogin,
+                    tvPrivacyPolicy
+                )
+                startDelay = 200
+            }.start()
+        }
     }
 
     override fun onResume() {
@@ -100,6 +114,22 @@ class RegisterFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         (activity as MainActivity).showBottomNavigation()
+    }
+
+    private fun setupView() {
+        binding.apply {
+            val text = getString(R.string.bisindo)
+            val spannableString = SpannableString("Learn $text\nwith us.")
+            val startIndex = spannableString.indexOf(text)
+            val foregroundColorSpan = ForegroundColorSpan(resources.getColor(R.color.primary, null))
+            spannableString.setSpan(
+                foregroundColorSpan,
+                startIndex,
+                startIndex + text.length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            tvTitle.text = spannableString
+        }
     }
 
 }

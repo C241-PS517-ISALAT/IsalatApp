@@ -9,11 +9,11 @@
     <string name="gallery">Gallery</string>
     <string name="image">Images</string>
     <string name="register_text">Register Here</string>
-    <string name="login">Log In</string>
+    <string name="login">Sign In</string>
     <string name="password">Password</string>
     <string name="email">Email</string>
-    <string name="name">Name</string>
-    <string name="register">Register</string>
+    <string name="name">Full Name</string>
+    <string name="register">Sign Up</string>
     <string name="title_signup">Submit Your Data Here</string>
     <string name="title_login">Please Log In Here</string>
     <string name="login_text">Log In here</string>
@@ -33,4 +33,9 @@
     <string name="default_web_client_id">Google Sing-In</string>
     <string name="titleNews">Judul\n</string>
     <string name="link">Link Source News</string>
+    <string name="logo">Logo Image</string>
+    <string name="learn_bisindo">Learn BISINDO with us.</string>
+    <string name="to_register">Create an account now!</string>
+    <string name="to_login">Log in here!</string>
+    <string name="bisindo">BISINDO</string>
 </resources>

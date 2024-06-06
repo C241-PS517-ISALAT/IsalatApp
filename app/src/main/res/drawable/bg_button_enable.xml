@@ -9,9 +9,8 @@
     </item>
     <item>
         <shape>
-            <solid android:color="@color/colorPrimary" />
+            <solid android:color="@color/secondary" />
             <corners android:radius="8dp" />
-            <padding android:left="4dp" android:right="4dp" />
         </shape>
     </item>
 </selector>
