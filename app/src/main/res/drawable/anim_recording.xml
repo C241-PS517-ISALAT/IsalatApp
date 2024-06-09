@@ -1,0 +1,6 @@
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_recording">
+    <target
+        android:name="recording_circle"
+        android:animation="@animator/anim_recording_pulse" />
+</animated-vector>
