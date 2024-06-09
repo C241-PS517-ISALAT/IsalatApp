@@ -1,35 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:paddingHorizontal="16dp"
+    android:paddingTop="30dp"
     tools:context="ui.home.HomeFragment">
 
     <!-- Welcome Message -->
     <TextView
-        android:id="@+id/welcomeMessage"
+        android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:fontFamily="@font/semibold"
         android:text="Welcome, John Doe"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Subtitle -->
     <TextView
-        android:id="@+id/subtitle"
+        android:id="@+id/tv_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:fontFamily="@font/regular"
         android:text="Let's start the day, with us."
-        android:textSize="16sp" />
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_title" />
 
     <!-- Horizontal ScrollView for icons -->
     <HorizontalScrollView
+        android:id="@+id/menu_feature"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="16dp">
+        android:layout_marginVertical="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_subtitle">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -41,17 +51,30 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:orientation="vertical"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="vertical">
 
-                <ImageView
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:src="@drawable/ic_sample_icon" />
+                <androidx.cardview.widget.CardView
+                    android:layout_width="81dp"
+                    android:layout_height="81dp"
+                    app:cardCornerRadius="40.5dp">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/sign_translate" />
+                </androidx.cardview.widget.CardView>
+
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="81dp"
                     android:layout_height="wrap_content"
-                    android:text="BISINDO Translation" />
+                    android:ellipsize="end"
+                    android:fontFamily="@font/medium"
+                    android:maxLines="2"
+                    android:text="BISINDO Translation"
+                    android:textAlignment="center"
+                    android:textSize="14dp" />
 
             </LinearLayout>
 
@@ -60,17 +83,92 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:orientation="vertical"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="vertical">
 
-                <ImageView
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:src="@drawable/ic_sample_icon" />
+                <androidx.cardview.widget.CardView
+                    android:layout_width="81dp"
+                    android:layout_height="81dp"
+                    app:cardCornerRadius="40.5dp">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/object_detect" />
+                </androidx.cardview.widget.CardView>
+
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="81dp"
                     android:layout_height="wrap_content"
-                    android:text="Object Detection" />
+                    android:ellipsize="end"
+                    android:fontFamily="@font/medium"
+                    android:maxLines="2"
+                    android:text="Object Detection"
+                    android:textAlignment="center"
+                    android:textSize="14dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="81dp"
+                    android:layout_height="81dp"
+                    app:cardCornerRadius="40.5dp">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/dictionary" />
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:layout_width="81dp"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/medium"
+                    android:maxLines="2"
+                    android:text="BISINDO Dictionary"
+                    android:textAlignment="center"
+                    android:textSize="14dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="81dp"
+                    android:layout_height="81dp"
+                    app:cardCornerRadius="40.5dp">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/news" />
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:layout_width="81dp"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/medium"
+                    android:maxLines="2"
+                    android:text="News"
+                    android:textAlignment="center"
+                    android:textSize="14dp" />
 
             </LinearLayout>
 
@@ -78,22 +176,36 @@
         </LinearLayout>
     </HorizontalScrollView>
 
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/menu_feature" />
+
     <!-- News for You section -->
     <TextView
         android:id="@+id/newsForYouTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/semibold"
         android:text="News for You"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider" />
 
     <!-- Fragment Container for NewsFragment -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/newsFragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_marginTop="18dp"
+        android:layout_weight="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/newsForYouTitle" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

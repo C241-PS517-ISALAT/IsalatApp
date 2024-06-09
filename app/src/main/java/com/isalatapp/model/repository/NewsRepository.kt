@@ -26,7 +26,7 @@ class NewsRepository {
                         val articles = response.body()?.articles ?: emptyList()
                         Log.d("NewsRepository", "Raw articles response: ${response.body()}")
                         val newsList = articles.mapNotNull { article ->
-                            if (!article.title.isNullOrEmpty() && !article.urlToImage.isNullOrEmpty() && !article.url.isNullOrEmpty()) {
+                            if (article.title.isNotEmpty() && !article.urlToImage.isNullOrEmpty() && article.url.isNotEmpty()) {
                                 NewsItem(article.title, article.urlToImage, article.url)
                             } else {
                                 null

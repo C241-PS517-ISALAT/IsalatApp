@@ -35,11 +35,15 @@ class LoginFragment : Fragment() {
 
 
         binding.btnLogin.setOnClickListener {
-            val email = binding.edLoginEmail.text.toString().trim()
-            val password = binding.edLoginPassword.text.toString().trim()
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, HomeFragment())
-                .commit()
+            val email = binding.edLoginEmail.text.toString().lowercase()
+            val password = binding.edLoginPassword.text.toString()
+
+
+            parentFragmentManager.beginTransaction().apply {
+                replace(R.id.fragment_container, HomeFragment(), HomeFragment::class.java.simpleName)
+                addToBackStack(null)
+                commit()
+            }
 
 //            if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
 //                Toast.makeText(requireContext(), R.string.email_reminder, Toast.LENGTH_SHORT)

@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="Title">
-        <item name="android:fontFamily">@font/semibold</item>
+<resources >
+    <style name="Theme.App" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="toolbarStyle">@style/Widget.App.Toolbar</item>
+    </style>
+    <style name="Widget.App.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="titleTextAppearance">@style/TextAppearance.App.TitleLarge</item>
+    </style>
+    <style name="TextAppearance.App.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="fontFamily">@font/semibold</item>
+        <item name="android:textSize">17sp</item>
         <item name="android:textColor">@color/black</item>
-        <item name="android:textSize">32sp</item>
     </style>
 
-    <style name="Subtitle">
-        <item name="android:fontFamily">@font/semibold</item>
-        <item name="android:textColor">@color/primary</item>
-        <item name="android:textSize">32sp</item>
-    </style>
+
 </resources>

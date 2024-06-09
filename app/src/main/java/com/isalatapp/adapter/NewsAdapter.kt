@@ -37,7 +37,7 @@ class NewsAdapter : ListAdapter<NewsItem, NewsAdapter.ViewHolder>(DiffCallback()
                 setTag(R.id.tvLink, newsItem.url)
                 visibility = if (newsItem.url != null) View.VISIBLE else View.GONE
             }
-            if (!newsItem.imageUrl.isNullOrEmpty()) {
+            if (newsItem.imageUrl.isNotEmpty()) {
                 Glide.with(itemView.context)
                     .load(newsItem.imageUrl)
                     .placeholder(R.drawable.ic_place_holder)

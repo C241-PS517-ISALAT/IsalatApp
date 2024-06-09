@@ -18,7 +18,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "NEWS_API_KEY", "\"b4d8bbbffb0e45af991afa94c8a42f81\"")
+        buildConfigField("String","AUTH_API_URL","\"https://sign-language-app-425005.et.r.appspot.com/\"")
+        buildConfigField("String", "NEWS_API_KEY", "\"1d95acb225e74607a6a87efe6dd6347a\"")
         buildConfigField("String", "NEWS_API_URL", "\"https://newsapi.org/v2/\"")
     }
 
@@ -48,43 +49,35 @@ android {
 
 dependencies {
 
-    val cameraxVersion = "1.2.3"
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.activity)
+    implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.fragment.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    implementation("com.squareup.picasso:picasso:2.71828")
-    implementation("androidx.exifinterface:exifinterface:1.3.7")
-    implementation("com.google.android.material:material:1.12.0")
-
-
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
-
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-
-    implementation("androidx.camera:camera-camera2:$cameraxVersion")
-    implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
-    implementation("androidx.camera:camera-view:$cameraxVersion")
-
-    implementation ("androidx.camera:camera-core:1.3.3")
-    implementation ("androidx.camera:camera-camera2:1.3.3")
-    implementation ("androidx.camera:camera-lifecycle:1.3.3")
-//    implementation ("androidx.camera:camera-video:1.3.3")
-//    implementation ("androidx.camera:camera-view:1.3.3")
-//    implementation ("androidx.camera:camera-extensions:1.3.3")
-    implementation ("androidx.camera:camera-view:1.3.3-alpha27")
-    implementation ("androidx.camera:camera-extensions:1.3.3-alpha27")
-
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-
+    //Material
+    implementation(libs.material)
+    //Exifinterface
+    implementation(libs.androidx.exifinterface)
+    //Retrofit & Okhttp3
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.logging.interceptor)
+    //CameraX
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation (libs.androidx.camera.video)
+    implementation (libs.androidx.camera.view)
+    implementation (libs.androidx.camera.extensions)
+    //Glide
+    implementation(libs.glide)
+    //Data Store
+    implementation(libs.androidx.datastore.preferences)
+    //Live Data
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
 
 }
