@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.isalatapp.adapter.NewsAdapter
 import com.isalatapp.databinding.FragmentNewsBinding
-import com.isalatapp.model.view.NewsViewModel
+import com.isalatapp.helper.model.NewsViewModel
 
 
 class NewsFragment : Fragment() {

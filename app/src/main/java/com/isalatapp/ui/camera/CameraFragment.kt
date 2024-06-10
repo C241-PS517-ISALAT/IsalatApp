@@ -14,8 +14,8 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.isalatapp.databinding.FragmentCameraBinding
-import com.isalatapp.model.getImageUri
-import com.isalatapp.model.getVideoUri
+import com.isalatapp.helper.getImageUri
+import com.isalatapp.helper.getVideoUri
 
 class CameraFragment : Fragment() {
     private var _binding:  FragmentCameraBinding? = null

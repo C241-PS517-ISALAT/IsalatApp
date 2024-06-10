@@ -1,6 +1,7 @@
 package com.isalatapp.api.retrofit
 
 import com.isalatapp.BuildConfig
+import com.isalatapp.helper.UserPreferences
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
@@ -24,10 +25,8 @@ object ApiConfig {
                 req.newBuilder().addHeader("Authorization", "Bearer $token").build()
             chain.proceed(requestHeaders)
         }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .addInterceptor(loggingInterceptor)
-            .build()
+        val client = OkHttpClient.Builder().addInterceptor(loggingInterceptor)
+            .addInterceptor(authInterceptor).build()
         val retrofit =
             Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create())
                 .client(client).build()

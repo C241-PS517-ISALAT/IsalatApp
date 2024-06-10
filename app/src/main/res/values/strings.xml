@@ -39,4 +39,5 @@
     <string name="to_login">Log in here!</string>
     <string name="bisindo">BISINDO</string>
     <string name="edit_profile">Edit Profile</string>
+    <string name="minimum_characters">Password must be at least 8 character</string>
 </resources>

@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.isalatapp.R
-import com.isalatapp.model.data.NewsItem
+import com.isalatapp.helper.data.NewsItem
 
 
 class NewsAdapter : ListAdapter<NewsItem, NewsAdapter.ViewHolder>(DiffCallback()) {

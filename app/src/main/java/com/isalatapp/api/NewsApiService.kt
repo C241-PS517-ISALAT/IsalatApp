@@ -1,6 +1,6 @@
 package com.isalatapp.api
 
-import com.isalatapp.model.response.NewsResponse
+import com.isalatapp.helper.response.NewsResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
