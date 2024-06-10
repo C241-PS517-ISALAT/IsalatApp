@@ -33,4 +33,8 @@
     <string name="default_web_client_id">Google Sing-In</string>
     <string name="titleNews">Judul\n</string>
     <string name="link">Link Source News</string>
+    <string name="mode_button">mode</string>
+    <string name="capture_button">camera</string>
+    <string name="logo">logo</string>
+    <string name="learn_bisindo">Learning BISINDO</string>
 </resources>

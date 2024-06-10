@@ -1,9 +1,11 @@
 package com.isalatapp.ui.camera
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.RectF
 import android.graphics.drawable.Animatable
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -30,6 +32,7 @@ import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
 import com.google.common.util.concurrent.ListenableFuture
 import com.isalatapp.R
@@ -37,19 +40,14 @@ import com.isalatapp.databinding.FragmentCameraXBinding
 import com.isalatapp.model.getImageUri
 import com.isalatapp.ui.customview.OverlayView
 import java.io.File
+import java.io.FileOutputStream
 
 class CameraXFragment : Fragment() {
 
     private var _binding: FragmentCameraXBinding? = null
     private val binding get() = _binding!!
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
-    private val REQUEST_CAMERA_PERMISSION = 1001
-
-    private var videoCapture: VideoCapture<Recorder>? = null
-    private var activeRecording: Recording? = null
-    private var recordingStartTime: Long = 0
-    private val handler = Handler(Looper.getMainLooper())
-    private var currentImageUri: Uri? = null
+    private val viewModel: CameraXViewModel by viewModels()
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -60,18 +58,10 @@ class CameraXFragment : Fragment() {
         }
     }
 
-    private fun allPermissionsGranted() =
-        ContextCompat.checkSelfPermission(
-            requireContext(), REQUIRED_PERMISSION
-        ) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(
-                    requireContext(), REQUIRED_PERMISSION_STORAGE
-                ) == PackageManager.PERMISSION_GRANTED
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentCameraXBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -86,21 +76,35 @@ class CameraXFragment : Fragment() {
 
         binding.buttonGallery.setOnClickListener { startGallery() }
         binding.buttonCapture.setOnClickListener { captureVideo() }
-        requestCameraPermission()
+
+        viewModel.currentImageUri.observe(viewLifecycleOwner) { uri ->
+            uri?.let { showVideo(it) }
+        }
+
+        viewModel.isRecording.observe(viewLifecycleOwner) { isRecording ->
+            if (isRecording) {
+                binding.recordingIndicator.visibility = View.VISIBLE
+                val animatedDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.anim_recording) as? AnimatedVectorDrawable
+                binding.recordingIndicator.setImageDrawable(animatedDrawable)
+                animatedDrawable?.start()
+                binding.recordingDuration.visibility = View.VISIBLE
+            } else {
+                binding.recordingIndicator.visibility = View.GONE
+                binding.recordingDuration.visibility = View.GONE
+                val animatedDrawable = binding.recordingIndicator.drawable as? AnimatedVectorDrawable
+                animatedDrawable?.stop()
+            }
+        }
+
+        viewModel.recordingDuration.observe(viewLifecycleOwner) { duration ->
+            binding.recordingDuration.text = duration
+        }
+        startCamera()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        handler.removeCallbacks(updateDurationRunnable)
-    }
-
-    private fun requestCameraPermission() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
-        } else {
-            startCamera()
-        }
     }
 
     private fun startCamera() {
@@ -113,16 +117,15 @@ class CameraXFragment : Fragment() {
 
     private fun bindPreview(cameraProvider: ProcessCameraProvider) {
         val preview = Preview.Builder().build()
-
         val cameraSelector = CameraSelector.Builder()
             .requireLensFacing(CameraSelector.LENS_FACING_BACK)
             .build()
-
         val recorder = Recorder.Builder()
             .setQualitySelector(QualitySelector.from(Quality.HIGHEST))
             .build()
 
-        videoCapture = VideoCapture.withOutput(recorder)
+        val videoCapture = VideoCapture.withOutput(recorder)
+        viewModel.setVideoCapture(videoCapture)
 
         val previewView = binding.previewView
         preview.setSurfaceProvider(previewView.surfaceProvider)
@@ -131,72 +134,44 @@ class CameraXFragment : Fragment() {
     }
 
     private fun captureVideo() {
-        val videoCapture = videoCapture ?: return
-
         val file = File(requireContext().externalMediaDirs.first(), "${System.currentTimeMillis()}.mp4")
         val outputOptions = FileOutputOptions.Builder(file).build()
-
-        if (activeRecording != null) {
-            activeRecording?.stop()
-            activeRecording = null
-            binding.recordingDuration.visibility = View.GONE
-            binding.recordingIndicator.visibility = View.GONE
-            (binding.recordingIndicator.drawable as? Animatable)?.stop()
-            handler.removeCallbacks(updateDurationRunnable)
-            showVideo(file)
-        } else {
-            activeRecording = videoCapture.output
-                .prepareRecording(requireContext(), outputOptions)
-                .start(ContextCompat.getMainExecutor(requireContext())) { recordEvent ->
-                    when (recordEvent) {
-                        is VideoRecordEvent.Start -> {
-                            recordingStartTime = System.currentTimeMillis()
-                            binding.recordingDuration.visibility = View.VISIBLE
-                            binding.recordingIndicator.visibility = View.VISIBLE
-                            binding.recordingIndicator.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.anim_recording))
-                            (binding.recordingIndicator.drawable as? Animatable)?.start()
-                            handler.post(updateDurationRunnable)
-                            Toast.makeText(context, "Recording started", Toast.LENGTH_SHORT).show()
-                        }
-                        is VideoRecordEvent.Finalize -> {
-                            if (!recordEvent.hasError()) {
-                                Toast.makeText(context, "Recording saved: ${file.absolutePath}", Toast.LENGTH_LONG).show()
-                            } else {
-                                file.delete()
-                                Toast.makeText(context, "Recording error", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    }
-                }
+        viewModel.startRecording(requireContext(), file, outputOptions) { savedFile ->
+            showVideo(Uri.fromFile(savedFile))
         }
     }
 
-    private val updateDurationRunnable = object : Runnable {
-        override fun run() {
-            val elapsedSeconds = (System.currentTimeMillis() - recordingStartTime) / 1000
-            val minutes = elapsedSeconds / 60
-            val seconds = elapsedSeconds % 60
-            binding.recordingDuration.text = String.format("%02d:%02d", minutes, seconds)
-            handler.postDelayed(this, 1000)
-        }
-    }
-
-    private fun showVideo(file: File) {
+    private fun showVideo(uri: Uri) {
+        val file = uriToFile(uri, requireContext())
         binding.previewVideoView.apply {
-            setVideoURI(Uri.fromFile(file))
+            setVideoURI(uri)
+            setOnCompletionListener {
+                start() // Replay the video when it finishes
+            }
             visibility = View.VISIBLE
             start()
         }
         binding.uploadButton.visibility = View.VISIBLE
     }
-    private fun showVideo() {
-        currentImageUri?.let {
-            Log.d("Video URI", "showImage: $it")
-            binding.previewVideoView.setVideoURI(it)
-            binding.previewVideoView.visibility = View.VISIBLE
-            binding.uploadButton.visibility = View.VISIBLE
+
+    private fun uriToFile(uri: Uri, context: Context): File {
+        val contentResolver = context.contentResolver
+        val file = File(context.cacheDir, "temp_video.mp4")
+        val inputStream = contentResolver.openInputStream(uri)
+        val outputStream = FileOutputStream(file)
+        inputStream.use { input ->
+            outputStream.use { output ->
+                val buffer = ByteArray(4 * 1024)
+                var read: Int
+                while (input!!.read(buffer).also { read = it } != -1) {
+                    output.write(buffer, 0, read)
+                }
+                output.flush()
+            }
         }
+        return file
     }
+
     private fun startGallery() {
         launcherGallery.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
@@ -204,36 +179,19 @@ class CameraXFragment : Fragment() {
     private val launcherGallery = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
-        if (uri != null) {
-            currentImageUri = uri
-            showVideo()
-        } else {
-            Log.d("Photo Picker", "No media selected")
-        }
+        viewModel.setImageUri(uri)
     }
 
-    private val launcherIntentCamera = registerForActivityResult(
-        ActivityResultContracts.TakePicture()
-    ) { isSuccess ->
-        if (isSuccess) {
-            showVideo()
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CAMERA_PERMISSION && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            startCamera()
-        } else {
-            Toast.makeText(requireContext(), "Camera permission is required to use this feature", Toast.LENGTH_SHORT).show()
-        }
-    }
+    private fun allPermissionsGranted() = ContextCompat.checkSelfPermission(
+        requireContext(), REQUIRED_PERMISSION
+    ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+        requireContext(), REQUIRED_PERMISSION_STORAGE
+    ) == PackageManager.PERMISSION_GRANTED
 
     companion object {
         private const val REQUIRED_PERMISSION = Manifest.permission.CAMERA
         private const val REQUIRED_PERMISSION_STORAGE = Manifest.permission.WRITE_EXTERNAL_STORAGE
     }
 }
-
 
 
