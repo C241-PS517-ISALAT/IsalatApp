@@ -1,5 +1,3 @@
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,10 +5,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.isalatapp.R
 import com.isalatapp.adapter.NewsAdapter
 import com.isalatapp.databinding.FragmentNewsBinding
-import com.isalatapp.model.view.NewsViewModel
+import com.isalatapp.helper.model.NewsViewModel
 
 
 class NewsFragment : Fragment() {
@@ -32,11 +29,11 @@ class NewsFragment : Fragment() {
 
         initRecyclerView()
 
-        newsViewModel = ViewModelProvider(this).get(NewsViewModel::class.java)
+        newsViewModel = ViewModelProvider(this)[NewsViewModel::class.java]
         newsViewModel.fetchNews()
-        newsViewModel.newsList.observe(viewLifecycleOwner, { newsList ->
+        newsViewModel.newsList.observe(viewLifecycleOwner) { newsList ->
             newsAdapter.submitList(newsList)
-        })
+        }
     }
 
     private fun initRecyclerView() {

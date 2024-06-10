@@ -7,7 +7,7 @@
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".auth.RegisterFragment">
+    tools:context=".ui.auth.RegisterFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -85,7 +85,7 @@
                 app:startIconDrawable="@drawable/ic_person"
                 tools:alpha="100">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <com.isalatapp.ui.customview.MyEditTextCustomView
                     android:id="@+id/ed_register_name"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
@@ -123,7 +123,7 @@
                 app:startIconDrawable="@drawable/ic_email"
                 tools:alpha="100">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <com.isalatapp.ui.customview.EmailEditText
                     android:id="@+id/ed_register_email"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
@@ -162,14 +162,12 @@
                 app:startIconDrawable="@drawable/ic_lock"
                 tools:alpha="100">
 
-                <com.isalatapp.ui.customview.MyEditTextCustomView
+                <com.isalatapp.ui.customview.PwdEditText
                     android:id="@+id/ed_register_password"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_margin="0dp"
-                    android:ems="10"
                     android:inputType="textPassword"
-                    android:minHeight="40dp"
                     android:padding="0dp"
                     tools:ignore="SpeakableTextPresentCheck" />
             </com.google.android.material.textfield.TextInputLayout>

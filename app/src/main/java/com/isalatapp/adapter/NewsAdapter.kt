@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.isalatapp.R
-import com.isalatapp.model.data.NewsItem
+import com.isalatapp.helper.data.NewsItem
 
 
 class NewsAdapter : ListAdapter<NewsItem, NewsAdapter.ViewHolder>(DiffCallback()) {
@@ -37,7 +37,7 @@ class NewsAdapter : ListAdapter<NewsItem, NewsAdapter.ViewHolder>(DiffCallback()
                 setTag(R.id.tvLink, newsItem.url)
                 visibility = if (newsItem.url != null) View.VISIBLE else View.GONE
             }
-            if (!newsItem.imageUrl.isNullOrEmpty()) {
+            if (newsItem.imageUrl.isNotEmpty()) {
                 Glide.with(itemView.context)
                     .load(newsItem.imageUrl)
                     .placeholder(R.drawable.ic_place_holder)
