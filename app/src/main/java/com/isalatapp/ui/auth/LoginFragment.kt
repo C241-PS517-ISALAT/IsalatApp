@@ -2,6 +2,8 @@ package com.isalatapp.ui.auth
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -29,11 +31,10 @@ class LoginFragment : Fragment() {
     private val viewModel by viewModels<AuthViewModel> {
         ViewModelFactory.getInstance(requireContext())
     }
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentLoginBinding.inflate(inflater, container, false)
         return binding.root
@@ -49,6 +50,19 @@ class LoginFragment : Fragment() {
 
     private fun setupAction() {
         binding.apply {
+            sharedPreferences = requireActivity().getSharedPreferences("UserPreferences", Context.MODE_PRIVATE)
+            with(sharedPreferences) {
+                cbxRememberMe.isChecked = getBoolean("remember_me", false)
+                cbxRememberMe.setOnCheckedChangeListener { _, isChecked ->
+                    edit().putBoolean("remember_me", isChecked).apply()
+                }
+                if (cbxRememberMe.isChecked) {
+                    val email = getString("email", "")
+                    val password = getString("password", "")
+                    edLoginEmail.setText(email)
+                    edLoginPassword.setText(password)
+                }
+            }
             btnLogin.setOnClickListener {
                 if (edLoginEmail.text?.isNotEmpty()!! && edLoginPassword.text?.length!! >= 8) {
                     viewModel.submitLogin(
@@ -60,77 +74,49 @@ class LoginFragment : Fragment() {
                         requireContext(), "Please fill the form correctly", Toast.LENGTH_SHORT
                     ).show()
                 }
+            }
 
-                val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext(), R.style.TransparentDialog)
-                builder.setView(R.layout.progress_indicator)
-                val dialog: AlertDialog = builder.create()
+            val builder: AlertDialog.Builder =
+                AlertDialog.Builder(requireContext(), R.style.TransparentDialog)
+            builder.setView(R.layout.progress_indicator)
+            val dialog: AlertDialog = builder.create()
 
-                viewModel.responseResult.observe(viewLifecycleOwner) { response ->
-                    when (response) {
-                        is ResultState.Loading -> dialog.show()
-                        is ResultState.Error -> {
-                            dialog.dismiss()
-                            Toast.makeText(
-                                requireContext(), response.error, Toast.LENGTH_SHORT
-                            ).show()
-                        }
-
-                        is ResultState.Success -> {
-                            dialog.dismiss()
-                            parentFragmentManager.beginTransaction().apply {
-                                replace(
-                                    R.id.fragment_container,
-                                    HomeFragment(),
-                                    HomeFragment::class.java.simpleName
-                                )
-                                addToBackStack(null)
-                                commit()
-                            }
-                        }
-
-                        else -> dialog.dismiss()
+            viewModel.responseResult.observe(viewLifecycleOwner) { response ->
+                when (response) {
+                    is ResultState.Loading -> dialog.show()
+                    is ResultState.Error -> {
+                        dialog.dismiss()
+                        Toast.makeText(
+                            requireContext(), response.error, Toast.LENGTH_SHORT
+                        ).show()
                     }
-                }
 
-//            if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-//                Toast.makeText(requireContext(), R.string.email_reminder, Toast.LENGTH_SHORT)
-//                    .show()
-//                return@setOnClickListener
-//            }
-//
-//            lifecycleScope.launch {
-//                try {
-//                    binding.progressBarlogin.visibility = View.VISIBLE
-//                    val response =
-//                        ApiClient.instance.login(mapOf("email" to email, "password" to password))
-//
-//                    if (!response.error) {
-//                        with(preferences.edit()) {
-//                            putString("token", response.loginResult.token)
-//                            putString("userId", response.loginResult.userId)
-//                            putString("name", response.loginResult.name)
-//                            apply()
-//                        }
-//                        Toast.makeText(requireContext(),
-//                            getString(R.string.login_successful), Toast.LENGTH_SHORT)
-//                            .show()
-//                        parentFragmentManager.beginTransaction()
-//                            .replace(R.id.fragment_container, StoryListFragment())
-//                            .commit()
-//                    } else {
-//                        Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT)
-//                            .show()
-//                    }
-//                } catch (e: Exception) {
-//                    Toast.makeText(
-//                        requireContext(),
-//                        getString(R.string.failed_login),
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-//                } finally {
-//                    binding.progressBarlogin.visibility = View.GONE
-//                }
-//            }
+                    is ResultState.Success -> {
+                        dialog.dismiss()
+                        parentFragmentManager.beginTransaction().apply {
+                            replace(
+                                R.id.fragment_container,
+                                HomeFragment(),
+                                HomeFragment::class.java.simpleName
+                            )
+                            addToBackStack(null)
+                            commit()
+                        }
+                    }
+
+                    else -> dialog.dismiss()
+                }
+            }
+            forgotPassword.setOnClickListener {
+                if (edLoginEmail.text.toString().isNotEmpty()) {
+                    viewModel.resetPassword(email = edLoginEmail.text.toString())
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Please fill the email to reset password",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }
@@ -142,8 +128,7 @@ class LoginFragment : Fragment() {
         val clickableSpan = object : ClickableSpan() {
             override fun onClick(view: View) {
                 parentFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, RegisterFragment())
-                    .commit()
+                    .replace(R.id.fragment_container, RegisterFragment()).commit()
             }
 
             override fun updateDrawState(ds: TextPaint) {
@@ -166,18 +151,15 @@ class LoginFragment : Fragment() {
         binding.apply {
             val labelHeading =
                 ObjectAnimator.ofFloat(labelHeading, View.ALPHA, 0f, 1f).setDuration(200)
-            val tvEmail =
-                ObjectAnimator.ofFloat(tvEmail, View.ALPHA, 0f, 1f).setDuration(200)
+            val tvEmail = ObjectAnimator.ofFloat(tvEmail, View.ALPHA, 0f, 1f).setDuration(200)
             val edLoginEmail =
                 ObjectAnimator.ofFloat(edlLoginEmail, View.ALPHA, 0f, 1f).setDuration(200)
-            val tvPassword =
-                ObjectAnimator.ofFloat(tvPassword, View.ALPHA, 0f, 1f).setDuration(200)
+            val tvPassword = ObjectAnimator.ofFloat(tvPassword, View.ALPHA, 0f, 1f).setDuration(200)
             val edLoginPassword =
                 ObjectAnimator.ofFloat(edlLoginPassword, View.ALPHA, 0f, 1f).setDuration(200)
             val cslRememberMe =
                 ObjectAnimator.ofFloat(cslRememberMe, View.ALPHA, 0f, 1f).setDuration(200)
-            val btnLogin =
-                ObjectAnimator.ofFloat(btnLogin, View.ALPHA, 0f, 1f).setDuration(200)
+            val btnLogin = ObjectAnimator.ofFloat(btnLogin, View.ALPHA, 0f, 1f).setDuration(200)
             val tvRegister =
                 ObjectAnimator.ofFloat(tvToRegister, View.ALPHA, 0f, 1f).setDuration(200)
 
