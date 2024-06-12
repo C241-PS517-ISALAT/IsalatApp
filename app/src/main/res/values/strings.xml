@@ -40,4 +40,7 @@
     <string name="bisindo">BISINDO</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="minimum_characters">Password must be at least 8 character</string>
+    <string name="mode_button">mode</string>
+    <string name="capture_button">camera</string>
+    <string name="gpu">GPU</string>
 </resources>

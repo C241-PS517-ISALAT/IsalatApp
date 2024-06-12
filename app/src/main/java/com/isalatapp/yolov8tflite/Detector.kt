@@ -3,7 +3,6 @@ package com.isalatapp.yolov8tflite
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.SystemClock
-import android.util.Log
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.gpu.CompatibilityList
@@ -40,38 +39,31 @@ class Detector(
         .build()
 
     fun setup(isGpu: Boolean = true) {
+
         if (interpreter != null) {
             close()
         }
 
-        val options = Interpreter.Options()
-        if (isGpu) {
-            try {
-                val compatList = CompatibilityList()
-                if (compatList.isDelegateSupportedOnThisDevice) {
+        val options = if (isGpu) {
+            val compatList = CompatibilityList()
+
+            Interpreter.Options().apply{
+                if(compatList.isDelegateSupportedOnThisDevice){
                     val delegateOptions = compatList.bestOptionsForThisDevice
-                    options.addDelegate(GpuDelegate(delegateOptions))
-                    Log.d("Detector", "GPU delegate initialized successfully.")
+                    this.addDelegate(GpuDelegate(delegateOptions))
                 } else {
-                    options.setNumThreads(4)
-                    Log.d("Detector", "GPU not supported, using 4 threads for CPU.")
+                    this.setNumThreads(4)
                 }
-            } catch (e: Exception) {
-                Log.e("Detector", "Error initializing GPU delegate, falling back to CPU. Error: ${e.message}")
-                options.setNumThreads(4)
             }
         } else {
-            options.setNumThreads(4)
+            Interpreter.Options().apply{
+                this.setNumThreads(4)
+            }
         }
 
-        try {
-            val model = FileUtil.loadMappedFile(context, modelPath)
-            interpreter = Interpreter(model, options)
-            Log.d("Detector", "Interpreter initialized successfully.")
-        } catch (e: Exception) {
-            Log.e("Detector", "Error initializing interpreter. Error: ${e.message}")
-            return
-        }
+
+        val model = FileUtil.loadMappedFile(context, modelPath)
+        interpreter = Interpreter(model, options)
 
         val inputShape = interpreter?.getInputTensor(0)?.shape() ?: return
         val outputShape = interpreter?.getOutputTensor(0)?.shape() ?: return
@@ -104,7 +96,6 @@ class Detector(
             e.printStackTrace()
         }
     }
-
 
     fun close() {
         interpreter?.close()

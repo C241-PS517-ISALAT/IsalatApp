@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.isalatapp.yolov8tflite.BoundingBox
 import java.io.File
 
 class CameraXViewModel : ViewModel() {
@@ -87,5 +88,12 @@ class CameraXViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         handler.removeCallbacks(updateDurationRunnable)
+    }
+
+
+    private val _boundingBox = MutableLiveData<BoundingBox>()
+    val boundingBox: LiveData<BoundingBox> get() = _boundingBox
+    fun updateBoundingBox(newBoundingBox: BoundingBox) {
+        _boundingBox.value = newBoundingBox
     }
 }

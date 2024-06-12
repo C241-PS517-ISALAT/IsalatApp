@@ -13,6 +13,7 @@ import com.isalatapp.databinding.ActivityMainBinding
 import com.isalatapp.ui.account.AccountFragment
 import com.isalatapp.ui.auth.RegisterFragment
 import com.isalatapp.ui.camera.CameraXFragment
+import com.isalatapp.ui.camera.ObjectDetectionFragment
 import com.isalatapp.ui.home.HomeFragment
 
 class MainActivity : AppCompatActivity() {
@@ -23,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        loadFragment(LoginFragment())
+//        loadFragment(LoginFragment())
 
         binding.bottomNavigation.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -32,7 +33,7 @@ class MainActivity : AppCompatActivity() {
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.nav_camera -> {
-                    loadFragment(CameraXFragment())
+                    loadFragment(ObjectDetectionFragment())
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.nav_account -> {
