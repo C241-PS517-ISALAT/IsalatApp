@@ -15,10 +15,12 @@ class UserRepository private constructor(
         userPreference.clearToken()
     }
 
+    suspend fun resetPassword(email: String) = apiService.resetPassword(email)
+
     suspend fun login(email: String, password: String) = apiService.login(email, password)
 
-    suspend fun register(email: String, password: String) =
-        apiService.register(email, password)
+    suspend fun register(name: String, email: String, password: String) =
+        apiService.register(name, email, password)
 
     companion object {
         @Volatile

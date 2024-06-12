@@ -8,12 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.isalatapp.R
-import com.isalatapp.ui.auth.LoginFragment
 import com.isalatapp.databinding.ActivityMainBinding
 import com.isalatapp.ui.account.AccountFragment
-import com.isalatapp.ui.auth.RegisterFragment
 import com.isalatapp.ui.camera.CameraXFragment
-import com.isalatapp.ui.camera.ObjectDetectionFragment
+import com.isalatapp.ui.camera.ModeCameraFragment
 import com.isalatapp.ui.home.HomeFragment
 
 class MainActivity : AppCompatActivity() {
@@ -33,7 +31,8 @@ class MainActivity : AppCompatActivity() {
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.nav_camera -> {
-                    loadFragment(ObjectDetectionFragment())
+                    loadFragment(ModeCameraFragment())
+
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.nav_account -> {

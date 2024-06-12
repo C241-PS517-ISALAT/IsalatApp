@@ -43,4 +43,6 @@
     <string name="mode_button">mode</string>
     <string name="capture_button">camera</string>
     <string name="gpu">GPU</string>
+    <string name="video_mode">Video Mode</string>
+    <string name="detection_mode">Detection Mode</string>
 </resources>

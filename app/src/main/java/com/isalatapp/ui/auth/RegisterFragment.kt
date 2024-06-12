@@ -40,7 +40,7 @@ class RegisterFragment : Fragment() {
                     .replace(R.id.fragment_container, HomeFragment()).commit()
             }
 
-            val toLoginText = getString(R.string.login)
+            val toLoginText = getString(R.string.to_login)
             val spannableString = SpannableStringBuilder("Already have an account? $toLoginText")
             val startIndex = spannableString.indexOf(toLoginText)
             val clickableSpan = object : ClickableSpan() {
@@ -118,7 +118,7 @@ class RegisterFragment : Fragment() {
 
     private fun setupView() {
         binding.apply {
-            val text = getString(R.string.learn_bisindo)
+            val text = getString(R.string.bisindo)
             val spannableString = SpannableString("Learn $text\nwith us.")
             val startIndex = spannableString.indexOf(text)
             val foregroundColorSpan = ForegroundColorSpan(resources.getColor(R.color.primary, null))

@@ -37,6 +37,7 @@ class ObjectDetectionFragment : Fragment(), Detector.DetectorListener {
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
     private var detector: Detector? = null
+    private var isObjectDetectionMode = true
 
     private lateinit var cameraExecutor: ExecutorService
 
@@ -65,6 +66,14 @@ class ObjectDetectionFragment : Fragment(), Detector.DetectorListener {
         }
 
         bindListeners()
+    }
+
+    private fun stopObjectDetection() {
+        imageAnalyzer?.clearAnalyzer()
+        detector?.close()
+        activity?.runOnUiThread {
+            binding.overlay.clear()
+        }
     }
 
     private fun bindListeners() {
@@ -169,9 +178,10 @@ class ObjectDetectionFragment : Fragment(), Detector.DetectorListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        detector?.close()
-        cameraExecutor.shutdown()
+        stopObjectDetection() // Pastikan untuk menghentikan deteksi objek
+        cameraExecutor.shutdown() // Tutup executor
     }
+
 
     override fun onResume() {
         super.onResume()

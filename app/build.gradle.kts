@@ -82,7 +82,11 @@ dependencies {
     implementation(libs.camera.view)
     implementation(libs.camera.extensions)
     implementation(libs.glide)
+
     implementation(libs.tensorflow.lite)
-    implementation(libs.tensorflow.lite.gpu) // Optional, for GPU acceleration
     implementation(libs.tensorflow.lite.support)
+    implementation(libs.tensorflow.lite.gpu.delegate.plugin)
+    implementation(libs.tensorflow.lite.gpu.api)
+    implementation(libs.tensorflow.lite.api)
+    implementation(libs.tensorflow.lite.gpu)
 }
