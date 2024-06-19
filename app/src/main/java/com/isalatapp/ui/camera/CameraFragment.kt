@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,19 +12,21 @@ import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.isalatapp.databinding.FragmentCameraBinding
 import com.isalatapp.helper.getImageUri
 import com.isalatapp.helper.getVideoUri
 
 class CameraFragment : Fragment() {
-    private var _binding:  FragmentCameraBinding? = null
+    private var _binding: FragmentCameraBinding? = null
     private val binding get() = _binding!!
 
     private var currentImageUri: Uri? = null
     private var currentVideoUri: Uri? = null
 
     private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
         if (isGranted) {
             Toast.makeText(context, "Permission request granted", Toast.LENGTH_LONG).show()
         } else {

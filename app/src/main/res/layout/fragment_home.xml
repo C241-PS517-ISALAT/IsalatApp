@@ -55,6 +55,7 @@
                 android:orientation="vertical">
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/btn_translate"
                     android:layout_width="81dp"
                     android:layout_height="81dp"
                     app:cardCornerRadius="40.5dp">
@@ -87,6 +88,7 @@
                 android:orientation="vertical">
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/btn_object_detect"
                     android:layout_width="81dp"
                     android:layout_height="81dp"
                     app:cardCornerRadius="40.5dp">
@@ -118,6 +120,7 @@
                 android:orientation="vertical">
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/btn_dictionary"
                     android:layout_width="81dp"
                     android:layout_height="81dp"
                     app:cardCornerRadius="40.5dp">
@@ -149,6 +152,7 @@
                 android:orientation="vertical">
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/btn_news"
                     android:layout_width="81dp"
                     android:layout_height="81dp"
                     app:cardCornerRadius="40.5dp">
@@ -205,6 +209,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="18dp"
         android:layout_weight="1"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/newsForYouTitle" />
 

@@ -1,23 +1,31 @@
 package com.isalatapp.helper.response
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 data class AuthResponse(
-
-    @field:SerializedName("loginResult") val loginResult: LoginResult? = null,
-
     @field:SerializedName("error") val error: Boolean? = null,
 
-    @field:SerializedName("message") val message: String? = null
+    @field:SerializedName("message") val message: String? = null,
+
+    @field:SerializedName("user") val user: UserRecord? = null,
 )
 
-data class LoginResult(
+@Entity(tableName = "userProfile")
+data class UserRecord(
+    @field:SerializedName("name") val name: String = "",
 
-    @field:SerializedName("name") val name: String? = null,
+    @field:SerializedName("phone") val phone: String = "",
 
-    @field:SerializedName("userId") val userId: String? = null,
+    @field:SerializedName("dob") val dob: String = "",
 
-    @field:SerializedName("token") val token: String? = null
+    @PrimaryKey
+    @field:SerializedName("email") val email: String = "",
+
+    @field:SerializedName("password") val password: String? = null,
+
+    @field:SerializedName("token") val token: String? = null,
+
+    @field:SerializedName("rememberMe") val rememberMe: Boolean = false
 )
-
-

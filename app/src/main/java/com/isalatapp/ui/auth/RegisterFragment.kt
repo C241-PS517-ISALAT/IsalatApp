@@ -13,17 +13,21 @@ import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.isalatapp.R
 import com.isalatapp.databinding.FragmentRegisterBinding
+import com.isalatapp.helper.model.AuthViewModel
 import com.isalatapp.ui.MainActivity
-import com.isalatapp.ui.home.HomeFragment
-
+import com.isalatapp.ui.ViewModelFactory
 
 class RegisterFragment : Fragment() {
     private lateinit var binding: FragmentRegisterBinding
-
+    private val viewModel by viewModels<AuthViewModel> {
+        ViewModelFactory.getInstance(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -34,38 +38,30 @@ class RegisterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupView()
+        setupAction()
+        playAnimation()
+    }
+
+    private fun setupAction() {
         binding.apply {
             btnRegister.setOnClickListener {
+                val name = edRegisterName.text.toString()
+                val email = edRegisterEmail.text.toString().lowercase()
+                val password = edRegisterPassword.text.toString()
+                if (name.isNotEmpty() && email.isNotEmpty() && password.length >= 8) {
+                    viewModel.submitRegister(
+                        name, email, password
+                    )
+                } else {
+                    Toast.makeText(
+                        requireContext(), "Please fill the form correctly", Toast.LENGTH_SHORT
+                    ).show()
+                }
                 parentFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, HomeFragment()).commit()
+                    .replace(R.id.fragment_container, LoginFragment()).commit()
             }
-
-            val toLoginText = getString(R.string.to_login)
-            val spannableString = SpannableStringBuilder("Already have an account? $toLoginText")
-            val startIndex = spannableString.indexOf(toLoginText)
-            val clickableSpan = object : ClickableSpan() {
-                override fun onClick(view: View) {
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, LoginFragment()).commit()
-                }
-
-                override fun updateDrawState(ds: TextPaint) {
-                    super.updateDrawState(ds)
-                    ds.color = ContextCompat.getColor(requireContext(), R.color.primary)
-                }
-            }
-
-            spannableString.setSpan(
-                clickableSpan,
-                startIndex,
-                startIndex + toLoginText.length,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-
-            tvToLogin.text = spannableString
-            tvToLogin.movementMethod = LinkMovementMethod.getInstance()
-            setupView()
-            playAnimation()
         }
     }
 
@@ -119,16 +115,41 @@ class RegisterFragment : Fragment() {
     private fun setupView() {
         binding.apply {
             val text = getString(R.string.bisindo)
-            val spannableString = SpannableString("Learn $text\nwith us.")
-            val startIndex = spannableString.indexOf(text)
+            val spannableStringBisindo = SpannableString("Learn $text\nwith us.")
+            val startIndexBisindo = spannableStringBisindo.indexOf(text)
             val foregroundColorSpan = ForegroundColorSpan(resources.getColor(R.color.primary, null))
-            spannableString.setSpan(
+            spannableStringBisindo.setSpan(
                 foregroundColorSpan,
-                startIndex,
-                startIndex + text.length,
+                startIndexBisindo,
+                startIndexBisindo + text.length,
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
             )
-            tvTitle.text = spannableString
+            tvTitle.text = spannableStringBisindo
+
+            val toLoginText = getString(R.string.to_login)
+            val spannableString = SpannableStringBuilder("Already have an account? $toLoginText")
+            val startIndex = spannableString.indexOf(toLoginText)
+            val clickableSpan = object : ClickableSpan() {
+                override fun onClick(view: View) {
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, LoginFragment()).commit()
+                }
+
+                override fun updateDrawState(ds: TextPaint) {
+                    super.updateDrawState(ds)
+                    ds.color = ContextCompat.getColor(requireContext(), R.color.primary)
+                }
+            }
+
+            spannableString.setSpan(
+                clickableSpan,
+                startIndex,
+                startIndex + toLoginText.length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+
+            tvToLogin.text = spannableString
+            tvToLogin.movementMethod = LinkMovementMethod.getInstance()
         }
     }
 

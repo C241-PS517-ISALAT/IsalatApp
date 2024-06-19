@@ -47,8 +47,8 @@ class Detector(
         val options = if (isGpu) {
             val compatList = CompatibilityList()
 
-            Interpreter.Options().apply{
-                if(compatList.isDelegateSupportedOnThisDevice){
+            Interpreter.Options().apply {
+                if (compatList.isDelegateSupportedOnThisDevice) {
                     val delegateOptions = compatList.bestOptionsForThisDevice
                     this.addDelegate(GpuDelegate(delegateOptions))
                 } else {
@@ -56,7 +56,7 @@ class Detector(
                 }
             }
         } else {
-            Interpreter.Options().apply{
+            Interpreter.Options().apply {
                 this.setNumThreads(4)
             }
         }
@@ -118,7 +118,8 @@ class Detector(
         val processedImage = imageProcessor.process(tensorImage)
         val imageBuffer = processedImage.buffer
 
-        val output = TensorBuffer.createFixedSize(intArrayOf(1, numChannel, numElements), OUTPUT_IMAGE_TYPE)
+        val output =
+            TensorBuffer.createFixedSize(intArrayOf(1, numChannel, numElements), OUTPUT_IMAGE_TYPE)
         interpreter?.run(imageBuffer, output.buffer)
 
         val bestBoxes = bestBox(output.floatArray)
@@ -132,7 +133,7 @@ class Detector(
         detectorListener.onDetect(bestBoxes, inferenceTime)
     }
 
-    private fun bestBox(array: FloatArray) : List<BoundingBox>? {
+    private fun bestBox(array: FloatArray): List<BoundingBox>? {
 
         val boundingBoxes = mutableListOf<BoundingBox>()
 
@@ -141,7 +142,7 @@ class Detector(
             var maxIdx = -1
             var j = 4
             var arrayIdx = c + numElements * j
-            while (j < numChannel){
+            while (j < numChannel) {
                 if (array[arrayIdx] > maxConf) {
                     maxConf = array[arrayIdx]
                     maxIdx = j - 4
@@ -156,10 +157,10 @@ class Detector(
                 val cy = array[c + numElements] // 1
                 val w = array[c + numElements * 2]
                 val h = array[c + numElements * 3]
-                val x1 = cx - (w/2F)
-                val y1 = cy - (h/2F)
-                val x2 = cx + (w/2F)
-                val y2 = cy + (h/2F)
+                val x1 = cx - (w / 2F)
+                val y1 = cy - (h / 2F)
+                val x2 = cx + (w / 2F)
+                val y2 = cy + (h / 2F)
                 if (x1 < 0F || x1 > 1F) continue
                 if (y1 < 0F || y1 > 1F) continue
                 if (x2 < 0F || x2 > 1F) continue
@@ -180,11 +181,11 @@ class Detector(
         return applyNMS(boundingBoxes)
     }
 
-    private fun applyNMS(boxes: List<BoundingBox>) : MutableList<BoundingBox> {
+    private fun applyNMS(boxes: List<BoundingBox>): MutableList<BoundingBox> {
         val sortedBoxes = boxes.sortedByDescending { it.cnf }.toMutableList()
         val selectedBoxes = mutableListOf<BoundingBox>()
 
-        while(sortedBoxes.isNotEmpty()) {
+        while (sortedBoxes.isNotEmpty()) {
             val first = sortedBoxes.first()
             selectedBoxes.add(first)
             sortedBoxes.remove(first)

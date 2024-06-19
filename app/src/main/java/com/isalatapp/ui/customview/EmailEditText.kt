@@ -31,7 +31,8 @@ class EmailEditText : AppCompatEditText, View.OnTouchListener {
 
 
     private fun init() {
-        clearButtonImage = ContextCompat.getDrawable(context, R.drawable.ic_close_black_24dp) as Drawable
+        clearButtonImage =
+            ContextCompat.getDrawable(context, R.drawable.ic_close_black_24dp) as Drawable
         setOnTouchListener(this)
 
         addTextChangedListener(object : TextWatcher {
@@ -110,7 +111,7 @@ class EmailEditText : AppCompatEditText, View.OnTouchListener {
     }
 
     private fun isValidEmail(email: String): Boolean {
-        val regex = Regex("^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}\$")
+        val regex = Regex("^[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")
         return regex.matches(email)
     }
 }

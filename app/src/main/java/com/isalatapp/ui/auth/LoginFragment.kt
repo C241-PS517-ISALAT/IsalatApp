@@ -2,8 +2,6 @@ package com.isalatapp.ui.auth
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -18,10 +16,12 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.google.android.material.snackbar.Snackbar
 import com.isalatapp.R
 import com.isalatapp.api.ResultState
 import com.isalatapp.databinding.FragmentLoginBinding
 import com.isalatapp.helper.model.AuthViewModel
+import com.isalatapp.helper.response.UserRecord
 import com.isalatapp.ui.MainActivity
 import com.isalatapp.ui.ViewModelFactory
 import com.isalatapp.ui.home.HomeFragment
@@ -31,7 +31,6 @@ class LoginFragment : Fragment() {
     private val viewModel by viewModels<AuthViewModel> {
         ViewModelFactory.getInstance(requireContext())
     }
-    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -49,75 +48,82 @@ class LoginFragment : Fragment() {
     }
 
     private fun setupAction() {
+        viewModel.logout()
         binding.apply {
-            sharedPreferences = requireActivity().getSharedPreferences("UserPreferences", Context.MODE_PRIVATE)
-            with(sharedPreferences) {
-                cbxRememberMe.isChecked = getBoolean("remember_me", false)
-                cbxRememberMe.setOnCheckedChangeListener { _, isChecked ->
-                    edit().putBoolean("remember_me", isChecked).apply()
-                }
-                if (cbxRememberMe.isChecked) {
-                    val email = getString("email", "")
-                    val password = getString("password", "")
-                    edLoginEmail.setText(email)
-                    edLoginPassword.setText(password)
-                }
-            }
             btnLogin.setOnClickListener {
-                if (edLoginEmail.text?.isNotEmpty()!! && edLoginPassword.text?.length!! >= 8) {
-                    viewModel.submitLogin(
-                        email = edLoginEmail.text.toString().lowercase(),
-                        password = edLoginPassword.text.toString()
-                    )
-                } else {
-                    Toast.makeText(
-                        requireContext(), "Please fill the form correctly", Toast.LENGTH_SHORT
-                    ).show()
-                }
+                handleLogin()
             }
 
-            val builder: AlertDialog.Builder =
-                AlertDialog.Builder(requireContext(), R.style.TransparentDialog)
+            forgotPassword.setOnClickListener {
+                handleForgotPassword()
+            }
+
+            val builder = AlertDialog.Builder(requireContext(), R.style.TransparentDialog)
             builder.setView(R.layout.progress_indicator)
             val dialog: AlertDialog = builder.create()
 
-            viewModel.responseResult.observe(viewLifecycleOwner) { response ->
-                when (response) {
-                    is ResultState.Loading -> dialog.show()
-                    is ResultState.Error -> {
-                        dialog.dismiss()
-                        Toast.makeText(
-                            requireContext(), response.error, Toast.LENGTH_SHORT
-                        ).show()
-                    }
+            observeViewModel(dialog)
+        }
+    }
 
-                    is ResultState.Success -> {
-                        dialog.dismiss()
-                        parentFragmentManager.beginTransaction().apply {
-                            replace(
-                                R.id.fragment_container,
-                                HomeFragment(),
-                                HomeFragment::class.java.simpleName
-                            )
-                            addToBackStack(null)
-                            commit()
-                        }
-                    }
+    private fun handleLogin() {
+        val email = binding.edLoginEmail.text.toString().lowercase()
+        val password = binding.edLoginPassword.text.toString()
 
-                    else -> dialog.dismiss()
+        if (email.isNotEmpty() && password.length >= 8) {
+            val rememberMe = binding.cbxRememberMe.isChecked
+            viewModel.submitLogin(UserRecord(email = email, rememberMe = rememberMe), password)
+
+        } else {
+            Toast.makeText(requireContext(), "Please fill the form correctly", Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
+
+
+    private fun handleForgotPassword() {
+        val email = binding.edLoginEmail.text.toString().lowercase()
+        if (email.isBlank()) {
+            Snackbar.make(
+                binding.forgotPassword,
+                "Please enter your email to reset password",
+                Snackbar.LENGTH_SHORT
+            ).show()
+        } else {
+            viewModel.resetPassword(email)
+            Toast.makeText(
+                requireContext(),
+                "Check your email to reset password",
+                Toast.LENGTH_SHORT
+            )
+                .show()
+        }
+    }
+
+    private fun observeViewModel(dialog: AlertDialog) {
+        viewModel.responseResult.observe(viewLifecycleOwner) { response ->
+            when (response) {
+                is ResultState.Loading -> dialog.show()
+                is ResultState.Error -> {
+                    dialog.dismiss()
+                    Toast.makeText(requireContext(), response.error, Toast.LENGTH_SHORT).show()
                 }
-            }
-            forgotPassword.setOnClickListener {
-                if (edLoginEmail.text.toString().isNotEmpty()) {
-                    viewModel.resetPassword(email = edLoginEmail.text.toString())
-                } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Please fill the email to reset password",
-                        Toast.LENGTH_SHORT
-                    ).show()
+
+                is ResultState.Success -> {
+                    dialog.dismiss()
+                    navigateToHome()
                 }
+
+                else -> dialog.dismiss()
             }
+        }
+    }
+
+    private fun navigateToHome() {
+        parentFragmentManager.beginTransaction().apply {
+            replace(R.id.fragment_container, HomeFragment(), HomeFragment::class.java.simpleName)
+            addToBackStack(null)
+            commit()
         }
     }
 

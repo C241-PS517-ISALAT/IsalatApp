@@ -46,7 +46,12 @@ class CameraXViewModel : ViewModel() {
         this.videoCapture = videoCapture
     }
 
-    fun startRecording(context: Context, file: File, outputOptions: FileOutputOptions, onFinish: (file: File) -> Unit) {
+    fun startRecording(
+        context: Context,
+        file: File,
+        outputOptions: FileOutputOptions,
+        onFinish: (file: File) -> Unit
+    ) {
         val videoCapture = videoCapture ?: return
         if (activeRecording != null) {
             stopRecording()
@@ -62,6 +67,7 @@ class CameraXViewModel : ViewModel() {
                         _isRecording.postValue(true)
                         handler.post(updateDurationRunnable)
                     }
+
                     is VideoRecordEvent.Finalize -> {
                         if (!recordEvent.hasError()) {
                             onFinish(file)

@@ -85,7 +85,7 @@
                 app:startIconDrawable="@drawable/ic_person"
                 tools:alpha="100">
 
-                <com.isalatapp.ui.customview.MyEditTextCustomView
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/ed_register_name"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
