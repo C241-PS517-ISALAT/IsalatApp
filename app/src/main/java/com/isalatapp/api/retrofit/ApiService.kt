@@ -1,29 +1,29 @@
 package com.isalatapp.api.retrofit
 
 import com.isalatapp.helper.response.AuthResponse
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
+import com.isalatapp.helper.response.UserRecord
+import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface ApiService {
-    @FormUrlEncoded
-    @POST("login")
+    @POST("users/signin")
     suspend fun login(
-        @Field("email") email: String,
-        @Field("password") password: String
+        @Body loginRequest: UserRecord
     ): AuthResponse
 
-    @FormUrlEncoded
-    @POST("register")
+    @POST("users/signup")
     suspend fun register(
-        @Field("name") name: String,
-        @Field("email") email: String,
-        @Field("password") password: String
+        @Body registerRequest: UserRecord
     ): AuthResponse
 
-    @FormUrlEncoded
-    @POST("resetpassword")
+    @POST("users/resetpassword")
     suspend fun resetPassword(
-        @Field("email") email: String
+        @Body resetPasswordRequest: UserRecord
+    ): AuthResponse
+
+    @GET("profile/profile")
+    suspend fun getProfile(
+        @Body profileRequest: UserRecord
     ): AuthResponse
 }

@@ -18,8 +18,10 @@ class MyButtonCustomView @JvmOverloads constructor(
     private var disabledBackground: Drawable? = null
 
     init {
-        enabledBackground = ResourcesCompat.getDrawable(resources, R.drawable.bg_button_enable, null)
-        disabledBackground = ResourcesCompat.getDrawable(resources, R.drawable.bg_button_disable, null)
+        enabledBackground =
+            ResourcesCompat.getDrawable(resources, R.drawable.bg_button_enable, null)
+        disabledBackground =
+            ResourcesCompat.getDrawable(resources, R.drawable.bg_button_disable, null)
 
         background = enabledBackground
     }

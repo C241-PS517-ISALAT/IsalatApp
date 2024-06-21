@@ -3,11 +3,17 @@ package com.isalatapp.ui.camera
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+<<<<<<< HEAD
 import android.graphics.*
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.Size
+=======
+import android.graphics.drawable.AnimatedVectorDrawable
+import android.net.Uri
+import android.os.Bundle
+>>>>>>> design
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,8 +21,6 @@ import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.FileOutputOptions
@@ -31,6 +35,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.google.common.util.concurrent.ListenableFuture
 import com.isalatapp.R
 import com.isalatapp.databinding.FragmentCameraXBinding
+<<<<<<< HEAD
 import com.isalatapp.ui.customview.OverlayView
 import com.isalatapp.yolov8tflite.Constants.LABELS_ISALAT
 import com.isalatapp.yolov8tflite.Constants.MODEL_ISALAT
@@ -42,6 +47,8 @@ import org.tensorflow.lite.support.image.ops.ResizeOp
 import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import java.io.ByteArrayOutputStream
+=======
+>>>>>>> design
 import java.io.File
 import java.io.FileOutputStream
 
@@ -56,7 +63,8 @@ class CameraXFragment : Fragment() {
     private lateinit var labels: List<String>
 
     private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
         if (isGranted) {
             Toast.makeText(context, "Permission request granted", Toast.LENGTH_LONG).show()
         } else {
@@ -109,14 +117,18 @@ class CameraXFragment : Fragment() {
         viewModel.isRecording.observe(viewLifecycleOwner) { isRecording ->
             if (isRecording) {
                 binding.recordingIndicator.visibility = View.VISIBLE
-                val animatedDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.anim_recording) as? AnimatedVectorDrawable
+                val animatedDrawable = ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.anim_recording
+                ) as? AnimatedVectorDrawable
                 binding.recordingIndicator.setImageDrawable(animatedDrawable)
                 animatedDrawable?.start()
                 binding.recordingDuration.visibility = View.VISIBLE
             } else {
                 binding.recordingIndicator.visibility = View.GONE
                 binding.recordingDuration.visibility = View.GONE
-                val animatedDrawable = binding.recordingIndicator.drawable as? AnimatedVectorDrawable
+                val animatedDrawable =
+                    binding.recordingIndicator.drawable as? AnimatedVectorDrawable
                 animatedDrawable?.stop()
             }
         }
@@ -129,7 +141,7 @@ class CameraXFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        cameraProviderFuture?.let {
+        cameraProviderFuture.let {
             if (it.isDone) {
                 try {
                     val cameraProvider = it.get()
@@ -141,9 +153,13 @@ class CameraXFragment : Fragment() {
         }
     }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> design
     override fun onDestroy() {
         super.onDestroy()
-        cameraProviderFuture?.let {
+        cameraProviderFuture.let {
             if (it.isDone) {
                 try {
                     val cameraProvider = it.get()
@@ -155,6 +171,10 @@ class CameraXFragment : Fragment() {
         }
     }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> design
     private fun startCamera() {
         cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener(Runnable {
@@ -163,7 +183,8 @@ class CameraXFragment : Fragment() {
                 bindPreview(cameraProvider)
             } catch (e: Exception) {
                 e.printStackTrace()
-                Toast.makeText(context, "Failed to start camera: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Failed to start camera: ${e.message}", Toast.LENGTH_LONG)
+                    .show()
             }
         }, ContextCompat.getMainExecutor(requireContext()))
     }
@@ -183,6 +204,7 @@ class CameraXFragment : Fragment() {
         val previewView = binding.previewView
         preview.setSurfaceProvider(previewView.surfaceProvider)
 
+<<<<<<< HEAD
         cameraProvider.bindToLifecycle(this as LifecycleOwner, cameraSelector, preview, videoCapture, imageProcessor)
     }
 
@@ -237,10 +259,19 @@ class CameraXFragment : Fragment() {
         } else {
             "Label tidak ditemukan"
         }
+=======
+        cameraProvider.bindToLifecycle(
+            this as LifecycleOwner,
+            cameraSelector,
+            preview,
+            videoCapture
+        )
+>>>>>>> design
     }
 
     private fun captureVideo() {
-        val file = File(requireContext().externalMediaDirs.first(), "${System.currentTimeMillis()}.mp4")
+        val file =
+            File(requireContext().externalMediaDirs.first(), "${System.currentTimeMillis()}.mp4")
         val outputOptions = FileOutputOptions.Builder(file).build()
         viewModel.startRecording(requireContext(), file, outputOptions) { savedFile ->
             showVideo(Uri.fromFile(savedFile))

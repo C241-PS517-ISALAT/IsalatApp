@@ -5,13 +5,10 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
-import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.isalatapp.R
-import java.util.LinkedList
-import kotlin.math.max
 
 class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 

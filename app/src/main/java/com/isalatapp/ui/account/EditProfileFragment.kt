@@ -1,60 +1,114 @@
 package com.isalatapp.ui.account
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.isalatapp.R
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.isalatapp.databinding.FragmentEditProfileBinding
+import com.isalatapp.helper.model.AuthViewModel
+import com.isalatapp.helper.response.UserRecord
+import com.isalatapp.ui.ViewModelFactory
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [EditProfileFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class EditProfileFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+    private lateinit var binding: FragmentEditProfileBinding
+    private val viewModel by viewModels<AuthViewModel> {
+        ViewModelFactory.getInstance(requireContext())
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_edit_profile, container, false)
+    ): View {
+        binding = FragmentEditProfileBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment EditProfileFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            EditProfileFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.edEditBirthday.setOnClickListener {
+            showDatePicker()
+        }
+
+        binding.btnSave.setOnClickListener {
+            saveProfile()
+        }
+
+        observeViewModel()
+    }
+
+    private fun observeViewModel() {
+        viewModel.userRecord.observe(viewLifecycleOwner) { userRecord ->
+            userRecord?.let {
+                binding.edEditName.setText(it.name)
+                binding.edEditPhone.setText(it.phone)
+                binding.edEditBirthday.setText(it.dob)
+            }
+        }
+    }
+
+    private fun saveProfile() {
+        val name = binding.edEditName.text.toString().trim()
+        val phone = binding.edEditPhone.text.toString().trim()
+        val dob = binding.edEditBirthday.text.toString().trim()
+
+        if (name.isEmpty() || phone.isEmpty() || dob.isEmpty()) {
+            Toast.makeText(requireContext(), "All fields are required", Toast.LENGTH_SHORT)
+                .show()
+            return
+        }
+
+        val currentUser = viewModel.userRecord.value
+        if (currentUser != null) {
+            val updatedUser = UserRecord(
+                email = currentUser.email,
+                name = name,
+                phone = phone,
+                dob = dob
+            )
+
+            binding.progressBar.visibility = View.VISIBLE // Show loading indicator
+
+            viewModel.editProfile(updatedUser).observe(viewLifecycleOwner) { result ->
+                binding.progressBar.visibility = View.GONE // Hide loading indicator
+
+                if (result) {
+                    Toast.makeText(requireContext(), "Profile Updated", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "Failed to update profile", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
+        } else {
+            Toast.makeText(requireContext(), "Failed to get user details", Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
+
+    private fun showDatePicker() {
+        val datePicker = MaterialDatePicker.Builder.datePicker()
+            .setTitleText("Select date")
+            .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+            .build()
+
+        datePicker.addOnPositiveButtonClickListener { selection ->
+            // Convert the selected date to a readable format
+            val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.US)
+            val date = Date(selection)
+            val formattedDate = sdf.format(date)
+
+            // Set the selected date to the EditText
+            binding.edEditBirthday.setText(formattedDate)
+        }
+
+        datePicker.show(parentFragmentManager, "datePicker")
     }
 }

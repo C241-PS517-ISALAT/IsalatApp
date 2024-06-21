@@ -17,7 +17,8 @@ import com.isalatapp.helper.data.NewsItem
 class NewsAdapter : ListAdapter<NewsItem, NewsAdapter.ViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.activity_item_news, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.activity_item_news, parent, false)
         return ViewHolder(view)
     }
 
@@ -28,10 +29,12 @@ class NewsAdapter : ListAdapter<NewsItem, NewsAdapter.ViewHolder>(DiffCallback()
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvTitle: TextView = itemView.findViewById(R.id.tvTitle)
+        private val tvSubtitle: TextView = itemView.findViewById(R.id.tvSubtitle)
         private val imgNews: ImageView = itemView.findViewById(R.id.imgNews)
 
         fun bind(newsItem: NewsItem) {
             tvTitle.text = newsItem.title
+            tvSubtitle.text = newsItem.description
             itemView.findViewById<TextView>(R.id.tvLink).apply {
                 text = "Read more"
                 setTag(R.id.tvLink, newsItem.url)
@@ -44,7 +47,12 @@ class NewsAdapter : ListAdapter<NewsItem, NewsAdapter.ViewHolder>(DiffCallback()
                     .error(R.drawable.ic_place_holder)
                     .into(imgNews)
             } else {
-                imgNews.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.ic_place_holder))
+                imgNews.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        itemView.context,
+                        R.drawable.ic_place_holder
+                    )
+                )
             }
         }
     }
