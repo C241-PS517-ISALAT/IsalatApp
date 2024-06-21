@@ -46,7 +46,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> loadFragment(HomeFragment())
@@ -65,12 +64,30 @@ class MainActivity : AppCompatActivity() {
     private fun loadFragment(fragment: Fragment): Boolean {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
         return if (currentFragment?.javaClass != fragment.javaClass) {
-            supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment)
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
                 .commit()
+            updateBottomNavigationSelection()
             true
         } else {
             false
         }
+    }
+
+    private fun getCurrentFragment(): Fragment? {
+        return supportFragmentManager.findFragmentById(R.id.fragment_container)
+    }
+
+    private fun updateBottomNavigationSelection() {
+        val currentFragment = getCurrentFragment()
+        val itemId = when (currentFragment) {
+            is HomeFragment -> R.id.nav_home
+            is ModeCameraFragment -> R.id.nav_camera
+            is AccountFragment -> R.id.nav_account
+            else -> return
+        }
+        binding.bottomNavigation.selectedItemId = itemId
     }
 
     fun hideBottomNavigation() {

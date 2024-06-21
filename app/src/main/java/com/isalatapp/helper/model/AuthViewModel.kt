@@ -71,11 +71,11 @@ class AuthViewModel(private val repository: UserRepository) : ViewModel() {
     }
 
 
-    fun submitRegister(name: String, email: String, password: String) {
+    fun submitRegister(userRecord: UserRecord) {
         viewModelScope.launch {
             try {
                 _responseResult.value = ResultState.Loading
-                val response = repository.register(name, email, password)
+                val response = repository.register(userRecord)
                 if (!response.error!!) {
                     _responseResult.value = ResultState.Success(response)
                 }
