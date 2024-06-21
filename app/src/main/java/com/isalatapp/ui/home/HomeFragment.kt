@@ -15,7 +15,7 @@ import com.isalatapp.R
 import com.isalatapp.databinding.FragmentHomeBinding
 import com.isalatapp.helper.model.AuthViewModel
 import com.isalatapp.ui.ViewModelFactory
-import com.isalatapp.ui.camera.CameraXFragment
+import com.isalatapp.ui.camera.ModeCameraFragment
 
 class HomeFragment : Fragment() {
 
@@ -47,26 +47,30 @@ class HomeFragment : Fragment() {
 
         binding.apply {
             btnNews.setOnClickListener {
-                childFragmentManager.beginTransaction().apply {
-                    replace(R.id.newsFragmentContainer, NewsFragment())
+                parentFragmentManager.beginTransaction().apply{
+                    replace(R.id.fragment_container, NewsFragment())
+                    addToBackStack(null)
                     commit()
                 }
             }
             btnTranslate.setOnClickListener {
-                childFragmentManager.beginTransaction().apply {
-                    replace(R.id.newsFragmentContainer, CameraXFragment())
+                parentFragmentManager.beginTransaction().apply{
+                    replace(R.id.fragment_container, ModeCameraFragment())
+                    addToBackStack(null)
                     commit()
                 }
             }
             btnObjectDetect.setOnClickListener {
-                childFragmentManager.beginTransaction().apply {
-                    replace(R.id.newsFragmentContainer, CameraXFragment())
+                parentFragmentManager.beginTransaction().apply{
+                    replace(R.id.fragment_container, ModeCameraFragment())
+                    addToBackStack(null)
                     commit()
                 }
             }
             btnDictionary.setOnClickListener {
-                childFragmentManager.beginTransaction().apply {
-                    replace(R.id.newsFragmentContainer, DictionaryFragment())
+                parentFragmentManager.beginTransaction().apply{
+                    replace(R.id.fragment_container, DictionaryFragment())
+                    addToBackStack(null)
                     commit()
                 }
             }

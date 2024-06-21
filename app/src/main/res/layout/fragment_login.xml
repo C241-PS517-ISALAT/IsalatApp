@@ -27,7 +27,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/semibold"
-                android:text="Welcome"
+                android:text="@string/head1_login"
                 android:textColor="@color/primary"
                 android:textSize="32sp" />
 
@@ -35,7 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/semibold"
-                android:text="Back!"
+                android:text="@string/head_login"
                 android:textColor="@android:color/black"
                 android:textSize="32sp" />
 
@@ -43,7 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Sign in for starting your learning experience with us."
+                android:text="@string/subtitle_login"
                 android:textColor="@android:color/darker_gray"
                 android:textSize="16sp" />
         </LinearLayout>
@@ -144,7 +144,7 @@
                     android:id="@+id/cbx_remember_me"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Remember me"
+                    android:text="@string/remember_me"
                     android:textColor="@android:color/darker_gray"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -156,7 +156,7 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
-                    android:text="Forgot password?"
+                    android:text="@string/forgot_password"
                     android:textColor="@color/primary"
                     android:textSize="14sp"
                     android:textStyle="bold"
@@ -170,7 +170,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:background="@drawable/button_background"
                 android:elegantTextHeight="true"
                 android:fontFamily="@font/semibold"
                 android:gravity="center"

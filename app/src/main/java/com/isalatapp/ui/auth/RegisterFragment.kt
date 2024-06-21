@@ -20,6 +20,7 @@ import androidx.fragment.app.viewModels
 import com.isalatapp.R
 import com.isalatapp.databinding.FragmentRegisterBinding
 import com.isalatapp.helper.model.AuthViewModel
+import com.isalatapp.helper.response.UserRecord
 import com.isalatapp.ui.MainActivity
 import com.isalatapp.ui.ViewModelFactory
 
@@ -50,9 +51,11 @@ class RegisterFragment : Fragment() {
                 val name = edRegisterName.text.toString()
                 val email = edRegisterEmail.text.toString().lowercase()
                 val password = edRegisterPassword.text.toString()
+                val phone = edRegisterPhone.text.toString()
+                val dob = edRegisterDob.text.toString()
                 if (name.isNotEmpty() && email.isNotEmpty() && password.length >= 8) {
                     viewModel.submitRegister(
-                        name, email, password
+                        userRecord = UserRecord(name, phone, dob, email, password)
                     )
                 } else {
                     Toast.makeText(
@@ -78,6 +81,12 @@ class RegisterFragment : Fragment() {
             val tvPassword = ObjectAnimator.ofFloat(tvPassword, View.ALPHA, 0f, 1f).setDuration(200)
             val edLoginPassword =
                 ObjectAnimator.ofFloat(edlRegisterPassword, View.ALPHA, 0f, 1f).setDuration(200)
+            val tvPhone = ObjectAnimator.ofFloat(tvPhone, View.ALPHA, 0f, 1f).setDuration(200)
+            val edLoginPhone =
+                ObjectAnimator.ofFloat(edlRegisterPhone, View.ALPHA, 0f, 1f).setDuration(200)
+            val tvDob = ObjectAnimator.ofFloat(tvDob, View.ALPHA, 0f, 1f).setDuration(200)
+            val edLoginDob =
+                ObjectAnimator.ofFloat(edlRegisterDob, View.ALPHA, 0f, 1f).setDuration(200)
             val btnRegister =
                 ObjectAnimator.ofFloat(btnRegister, View.ALPHA, 0f, 1f).setDuration(200)
             val tvLogin = ObjectAnimator.ofFloat(tvToLogin, View.ALPHA, 0f, 1f).setDuration(200)
@@ -93,6 +102,10 @@ class RegisterFragment : Fragment() {
                     edLoginEmail,
                     tvPassword,
                     edLoginPassword,
+                    tvPhone,
+                    edLoginPhone,
+                    tvDob,
+                    edLoginDob,
                     btnRegister,
                     tvLogin,
                     tvPrivacyPolicy

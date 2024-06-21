@@ -49,4 +49,18 @@
     <string name="phone">Phone Number</string>
     <string name="birthday">Birthday</string>
     <string name="error">Unknown error occurred</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="remember_me">Remember me</string>
+    <string name="subtitle_login">Sign in for starting your learning experience with us.</string>
+    <string name="head_login">Back!</string>
+    <string name="head1_login">Welcome</string>
+    <string name="welcome_home">Welcome, John Doe</string>
+    <string name="subtitle_home">Let\'s start the day, with us.</string>
+    <string name="button">Button</string>
+    <string name="title_btn">BISINDO Translation</string>
+    <string name="object_detection">Object Detection</string>
+    <string name="bisindo_dictionary">BISINDO Dictionary</string>
+    <string name="news">News</string>
+    <string name="news_for_you">News for You</string>
+    <string name="phone_number">Phone Number</string>
 </resources>

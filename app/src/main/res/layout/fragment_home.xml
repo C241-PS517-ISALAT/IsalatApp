@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/semibold"
-        android:text="Welcome, John Doe"
+        android:text="@string/welcome_home"
         android:textColor="@android:color/black"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/regular"
-        android:text="Let's start the day, with us."
+        android:text="@string/subtitle_home"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_title" />
@@ -64,6 +64,7 @@
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_gravity="center"
+                        android:contentDescription="@string/button"
                         android:src="@drawable/sign_translate" />
                 </androidx.cardview.widget.CardView>
 
@@ -73,9 +74,9 @@
                     android:ellipsize="end"
                     android:fontFamily="@font/medium"
                     android:maxLines="2"
-                    android:text="BISINDO Translation"
+                    android:text="@string/title_btn"
                     android:textAlignment="center"
-                    android:textSize="14dp" />
+                    android:textSize="14sp" />
 
             </LinearLayout>
 
@@ -97,6 +98,7 @@
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_gravity="center"
+                        android:contentDescription="@string/title_btn"
                         android:src="@drawable/object_detect" />
                 </androidx.cardview.widget.CardView>
 
@@ -106,9 +108,9 @@
                     android:ellipsize="end"
                     android:fontFamily="@font/medium"
                     android:maxLines="2"
-                    android:text="Object Detection"
+                    android:text="@string/object_detection"
                     android:textAlignment="center"
-                    android:textSize="14dp" />
+                    android:textSize="14sp" />
 
             </LinearLayout>
 
@@ -129,6 +131,7 @@
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_gravity="center"
+                        android:contentDescription="@string/title_btn"
                         android:src="@drawable/dictionary" />
                 </androidx.cardview.widget.CardView>
 
@@ -138,9 +141,9 @@
                     android:ellipsize="end"
                     android:fontFamily="@font/medium"
                     android:maxLines="2"
-                    android:text="BISINDO Dictionary"
+                    android:text="@string/bisindo_dictionary"
                     android:textAlignment="center"
-                    android:textSize="14dp" />
+                    android:textSize="14sp" />
 
             </LinearLayout>
 
@@ -161,6 +164,7 @@
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_gravity="center"
+                        android:contentDescription="@string/title_btn"
                         android:src="@drawable/news" />
                 </androidx.cardview.widget.CardView>
 
@@ -170,9 +174,9 @@
                     android:ellipsize="end"
                     android:fontFamily="@font/medium"
                     android:maxLines="2"
-                    android:text="News"
+                    android:text="@string/news"
                     android:textAlignment="center"
-                    android:textSize="14dp" />
+                    android:textSize="14sp" />
 
             </LinearLayout>
 
@@ -196,7 +200,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:fontFamily="@font/semibold"
-        android:text="News for You"
+        android:text="@string/news_for_you"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"

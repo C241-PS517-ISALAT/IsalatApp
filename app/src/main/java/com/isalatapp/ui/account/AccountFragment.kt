@@ -62,13 +62,13 @@ class AccountFragment : Fragment() {
         }
 
         binding.llPrivacyPolicy.setOnClickListener {
-            Toast.makeText(context, "Privacy Policy clicked", Toast.LENGTH_SHORT).show()
-            // Handle Privacy Policy action
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, PolicyFragment()).commit()
         }
 
         binding.llAboutUs.setOnClickListener {
-            Toast.makeText(context, "About Us clicked", Toast.LENGTH_SHORT).show()
-            // Handle About Us action
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, AboutUsFragment()).commit()
         }
 
         binding.llSignOut.setOnClickListener {

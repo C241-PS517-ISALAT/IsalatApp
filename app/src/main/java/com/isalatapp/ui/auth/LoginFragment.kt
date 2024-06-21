@@ -122,7 +122,6 @@ class LoginFragment : Fragment() {
     private fun navigateToHome() {
         parentFragmentManager.beginTransaction().apply {
             replace(R.id.fragment_container, HomeFragment(), HomeFragment::class.java.simpleName)
-            addToBackStack(null)
             commit()
         }
     }

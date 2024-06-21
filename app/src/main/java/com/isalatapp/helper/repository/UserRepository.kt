@@ -44,9 +44,8 @@ class UserRepository private constructor(
         return apiService.login(loginRequest)
     }
 
-    suspend fun register(name: String, email: String, password: String): AuthResponse {
-        val registerRequest = UserRecord(name = name, email = email, password = password)
-        return apiService.register(registerRequest)
+    suspend fun register(userRecord: UserRecord): AuthResponse {
+        return apiService.register(userRecord)
     }
 
     companion object {
