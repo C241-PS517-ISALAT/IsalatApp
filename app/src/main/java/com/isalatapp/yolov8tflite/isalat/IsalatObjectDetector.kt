@@ -1,9 +1,10 @@
-package com.isalatapp.yolov8tflite
+package com.isalatapp.yolov8tflite.isalat
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.SystemClock
 import android.util.Log
+import com.isalatapp.yolov8tflite.BoundingBox
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.gpu.CompatibilityList
@@ -19,7 +20,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 
-class IsalatDetector(
+class IsalatObjectDetector(
     private val context: Context,
     private val modelPath: String,
     private val labelPath: String,
@@ -33,6 +34,7 @@ class IsalatDetector(
     private var tensorHeight = 0
     private var numChannel = 0
     private var numElements = 0
+    private var isClassificationModel = false
 
     private val imageProcessor = ImageProcessor.Builder()
         .add(NormalizeOp(INPUT_MEAN, INPUT_STANDARD_DEVIATION))
@@ -40,7 +42,6 @@ class IsalatDetector(
         .build()
 
     fun setup(isGpu: Boolean = true) {
-
         if (interpreter != null) {
             close()
         }
@@ -48,8 +49,8 @@ class IsalatDetector(
         val options = if (isGpu) {
             val compatList = CompatibilityList()
 
-            Interpreter.Options().apply{
-                if(compatList.isDelegateSupportedOnThisDevice){
+            Interpreter.Options().apply {
+                if (compatList.isDelegateSupportedOnThisDevice) {
                     val delegateOptions = compatList.bestOptionsForThisDevice
                     this.addDelegate(GpuDelegate(delegateOptions))
                 } else {
@@ -57,7 +58,7 @@ class IsalatDetector(
                 }
             }
         } else {
-            Interpreter.Options().apply{
+            Interpreter.Options().apply {
                 this.setNumThreads(4)
             }
         }
@@ -68,27 +69,22 @@ class IsalatDetector(
         val inputShape = interpreter?.getInputTensor(0)?.shape() ?: return
         val outputShape = interpreter?.getOutputTensor(0)?.shape() ?: return
 
-        Log.d("IsalatDetector", "Input shape: ${inputShape.contentToString()}")
-        Log.d("IsalatDetector", "Output shape: ${outputShape.contentToString()}")
-
-        if (inputShape.size != 4 || outputShape.size < 2) {
-            throw IllegalArgumentException("Unexpected tensor shapes: input=${inputShape.contentToString()}, output=${outputShape.contentToString()}")
-        }
+        Log.d("IsalatObjectDetector", "Input shape: ${inputShape.contentToString()}")
+        Log.d("IsalatObjectDetector", "Output shape: ${outputShape.contentToString()}")
 
         tensorWidth = inputShape[1]
         tensorHeight = inputShape[2]
 
-        if (inputShape[1] == 3) {
-            tensorWidth = inputShape[2]
-            tensorHeight = inputShape[3]
-        }
-
-        if (outputShape.size == 2) {
-            numChannel = outputShape[1]
+        if (outputShape.size == 2 && outputShape[1] == 26) {
+            // Treat as classification model
+            isClassificationModel = true
+            numChannel = 26
             numElements = 1
         } else if (outputShape.size == 3) {
-            numChannel = outputShape[1]
-            numElements = outputShape[2]
+            // Treat as detection model
+            isClassificationModel = false
+            numChannel = outputShape[2]
+            numElements = outputShape[1]
         } else {
             throw IllegalArgumentException("Unexpected output tensor shape: ${outputShape.contentToString()}")
         }
@@ -131,86 +127,76 @@ class IsalatDetector(
         val processedImage = imageProcessor.process(tensorImage)
         val imageBuffer = processedImage.buffer
 
-        val output = TensorBuffer.createFixedSize(intArrayOf(1, numChannel, numElements), OUTPUT_IMAGE_TYPE)
-        interpreter?.run(imageBuffer, output.buffer)
+        if (isClassificationModel) {
+            // Classification
+            val output = TensorBuffer.createFixedSize(intArrayOf(1, labels.size), OUTPUT_IMAGE_TYPE)
+            interpreter?.run(imageBuffer, output.buffer)
 
-        val bestBoxes = bestBox(output.floatArray)
-        inferenceTime = SystemClock.uptimeMillis() - inferenceTime
+            val outputArray = output.floatArray
+            val maxIndex = outputArray.indices.maxByOrNull { outputArray[it] } ?: -1
+            val predictedLabel = labels.getOrNull(maxIndex) ?: "Unknown"
 
-        if (bestBoxes == null) {
-            detectorListener.onEmptyDetect()
-            return
+            // Create dummy bounding box for visualization
+            val boundingBox = BoundingBox(0.1f, 0.1f, 0.9f, 0.9f, 0.5f, 0.5f, 0.8f, 0.8f, 1.0f, maxIndex, predictedLabel)
+
+            inferenceTime = SystemClock.uptimeMillis() - inferenceTime
+            detectorListener.onDetect(listOf(boundingBox), inferenceTime)
+
+        } else {
+            // Object detection
+            val output = TensorBuffer.createFixedSize(intArrayOf(1, numElements, numChannel), OUTPUT_IMAGE_TYPE)
+            interpreter?.run(imageBuffer, output.buffer)
+
+            val boundingBoxes = bestBox(output.floatArray)
+            inferenceTime = SystemClock.uptimeMillis() - inferenceTime
+
+            if (boundingBoxes == null) {
+                detectorListener.onEmptyDetect()
+                return
+            }
+
+            // Filter bounding boxes based on confidence and size
+            val filteredBoxes = boundingBoxes.filter {
+                it.cnf > CONFIDENCE_THRESHOLD && it.w > MIN_BOX_SIZE && it.h > MIN_BOX_SIZE
+            }
+
+            if (filteredBoxes.isEmpty()) {
+                detectorListener.onEmptyDetect()
+                return
+            }
+
+            detectorListener.onDetect(filteredBoxes, inferenceTime)
         }
-
-        detectorListener.onDetect(bestBoxes, inferenceTime)
     }
 
-    private fun bestBox(array: FloatArray) : List<BoundingBox>? {
+    private fun bestBox(array: FloatArray): List<BoundingBox>? {
         val boundingBoxes = mutableListOf<BoundingBox>()
 
-        if (numElements == 1) {
-            for (c in array.indices step numChannel) {
-                val conf = array[c + 4]
-                if (conf > CONFIDENCE_THRESHOLD) {
-                    val clsIdx = array.copyOfRange(c + 5, c + numChannel).indices.maxByOrNull { array[c + 5 + it] } ?: -1
-                    val clsName = labels.getOrNull(clsIdx) ?: continue
+        for (i in 0 until numElements) {
+            val score = array[i * numChannel + 4]
+            if (score > CONFIDENCE_THRESHOLD) {
+                val clsIdx = array.copyOfRange(i * numChannel + 5, i * numChannel + numChannel).indices.maxByOrNull { array[i * numChannel + 5 + it] } ?: -1
+                val clsName = labels.getOrNull(clsIdx) ?: continue
 
-                    val cx = array[c]
-                    val cy = array[c + 1]
-                    val w = array[c + 2]
-                    val h = array[c + 3]
-                    val x1 = cx - (w / 2f)
-                    val y1 = cy - (h / 2f)
-                    val x2 = cx + (w / 2f)
-                    val y2 = cy + (h / 2f)
+                val cx = array[i * numChannel]
+                val cy = array[i * numChannel + 1]
+                val w = array[i * numChannel + 2]
+                val h = array[i * numChannel + 3]
+                val x1 = cx - (w / 2f)
+                val y1 = cy - (h / 2f)
+                val x2 = cx + (w / 2f)
+                val y2 = cy + (h / 2f)
 
-                    boundingBoxes.add(
-                        BoundingBox(
-                            x1 = x1, y1 = y1, x2 = x2, y2 = y2,
-                            cx = cx, cy = cy, w = w, h = h,
-                            cnf = conf, cls = clsIdx, clsName = clsName
-                        )
+                // Filter out bounding boxes that are too small
+                if (w < MIN_BOX_SIZE || h < MIN_BOX_SIZE) continue
+
+                boundingBoxes.add(
+                    BoundingBox(
+                        x1 = x1, y1 = y1, x2 = x2, y2 = y2,
+                        cx = cx, cy = cy, w = w, h = h,
+                        cnf = score, cls = clsIdx, clsName = clsName
                     )
-                }
-            }
-        } else {
-            for (c in 0 until numElements) {
-                var maxConf = CONFIDENCE_THRESHOLD
-                var maxIdx = -1
-                var j = 4
-                var arrayIdx = c + numElements * j
-                while (j < numChannel){
-                    if (array[arrayIdx] > maxConf) {
-                        maxConf = array[arrayIdx]
-                        maxIdx = j - 4
-                    }
-                    j++
-                    arrayIdx += numElements
-                }
-
-                if (maxConf > CONFIDENCE_THRESHOLD) {
-                    val clsName = labels.getOrNull(maxIdx) ?: continue
-                    val cx = array[c]
-                    val cy = array[c + numElements]
-                    val w = array[c + numElements * 2]
-                    val h = array[c + numElements * 3]
-                    val x1 = cx - (w / 2F)
-                    val y1 = cy - (h / 2F)
-                    val x2 = cx + (w / 2F)
-                    val y2 = cy + (h / 2F)
-                    if (x1 < 0F || x1 > 1F) continue
-                    if (y1 < 0F || y1 > 1F) continue
-                    if (x2 < 0F || x2 > 1F) continue
-                    if (y2 < 0F || y2 > 1F) continue
-
-                    boundingBoxes.add(
-                        BoundingBox(
-                            x1 = x1, y1 = y1, x2 = x2, y2 = y2,
-                            cx = cx, cy = cy, w = w, h = h,
-                            cnf = maxConf, cls = maxIdx, clsName = clsName
-                        )
-                    )
-                }
+                )
             }
         }
 
@@ -219,11 +205,11 @@ class IsalatDetector(
         return applyNMS(boundingBoxes)
     }
 
-    private fun applyNMS(boxes: List<BoundingBox>) : MutableList<BoundingBox> {
+    private fun applyNMS(boxes: List<BoundingBox>): List<BoundingBox> {
         val sortedBoxes = boxes.sortedByDescending { it.cnf }.toMutableList()
         val selectedBoxes = mutableListOf<BoundingBox>()
 
-        while(sortedBoxes.isNotEmpty()) {
+        while (sortedBoxes.isNotEmpty()) {
             val first = sortedBoxes.first()
             selectedBoxes.add(first)
             sortedBoxes.remove(first)
@@ -259,10 +245,11 @@ class IsalatDetector(
 
     companion object {
         private const val INPUT_MEAN = 0f
-        private const val INPUT_STANDARD_DEVIATION = 255f
+        private const val INPUT_STANDARD_DEVIATION = 1f
         private val INPUT_IMAGE_TYPE = DataType.FLOAT32
         private val OUTPUT_IMAGE_TYPE = DataType.FLOAT32
         private const val CONFIDENCE_THRESHOLD = 0.3F
         private const val IOU_THRESHOLD = 0.5F
+        private const val MIN_BOX_SIZE = 0.1F // Minimum size of bounding box to consider (relative to image size)
     }
 }

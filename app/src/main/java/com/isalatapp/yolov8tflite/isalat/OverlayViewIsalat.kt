@@ -1,12 +1,12 @@
-package com.isalatapp.yolov8tflite
+package com.isalatapp.yolov8tflite.isalat
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
+import com.isalatapp.yolov8tflite.BoundingBox
 
 class OverlayViewIsalat(context: Context, attrs: AttributeSet) : View(context, attrs) {
     private val paint = Paint().apply {

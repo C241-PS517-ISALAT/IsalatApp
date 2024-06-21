@@ -43,14 +43,11 @@
     <string name="mode_button">mode</string>
     <string name="capture_button">camera</string>
     <string name="gpu">GPU</string>
-    <string name="video_mode">Video Mode</string>
+    <string name="live_mode">Live Mode</string>
     <string name="detection_mode">Detection Mode</string>
-<<<<<<< HEAD
     <string name="menu_fragment">Menu Fragment</string>
-=======
     <string name="save_profile">Save Changes</string>
     <string name="phone">Phone Number</string>
     <string name="birthday">Birthday</string>
     <string name="error">Unknown error occurred</string>
->>>>>>> design
 </resources>

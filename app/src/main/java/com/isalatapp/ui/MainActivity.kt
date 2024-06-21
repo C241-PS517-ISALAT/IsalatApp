@@ -24,12 +24,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-<<<<<<< HEAD
+
 //        loadFragment(LoginFragment())
         loadFragment(HomeFragment())
-=======
+
         setupViewModel()
->>>>>>> design
 
         viewModel.getSession().observe(this) { user ->
             when {

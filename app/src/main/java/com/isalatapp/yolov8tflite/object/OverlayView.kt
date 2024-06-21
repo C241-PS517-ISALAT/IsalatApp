@@ -1,4 +1,4 @@
-package com.isalatapp.ui.customview
+package com.isalatapp.yolov8tflite.`object`
 
 import android.content.Context
 import android.graphics.Bitmap

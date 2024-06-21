@@ -15,7 +15,8 @@ import com.isalatapp.R
 import com.isalatapp.databinding.FragmentHomeBinding
 import com.isalatapp.helper.model.AuthViewModel
 import com.isalatapp.ui.ViewModelFactory
-import com.isalatapp.ui.camera.CameraXFragment
+import com.isalatapp.ui.camera.IsalatModelFragment
+import com.isalatapp.ui.camera.ObjectDetectionFragment
 
 class HomeFragment : Fragment() {
 
@@ -54,13 +55,13 @@ class HomeFragment : Fragment() {
             }
             btnTranslate.setOnClickListener {
                 childFragmentManager.beginTransaction().apply {
-                    replace(R.id.newsFragmentContainer, CameraXFragment())
+                    replace(R.id.newsFragmentContainer, IsalatModelFragment())
                     commit()
                 }
             }
             btnObjectDetect.setOnClickListener {
                 childFragmentManager.beginTransaction().apply {
-                    replace(R.id.newsFragmentContainer, CameraXFragment())
+                    replace(R.id.newsFragmentContainer, ObjectDetectionFragment())
                     commit()
                 }
             }

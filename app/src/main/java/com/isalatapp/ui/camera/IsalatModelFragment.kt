@@ -19,16 +19,12 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.isalatapp.R
 import com.isalatapp.databinding.FragmentIsalatModelBinding
 import com.isalatapp.yolov8tflite.BoundingBox
 import com.isalatapp.yolov8tflite.Constants.LABELS_ISALAT
 import com.isalatapp.yolov8tflite.Constants.MODEL_ISALAT
-import com.isalatapp.yolov8tflite.Detector
-import com.isalatapp.yolov8tflite.IsalatClassifier
-import com.isalatapp.yolov8tflite.IsalatDetector
-import com.isalatapp.yolov8tflite.IsalatObjectDetector
-import com.isalatapp.yolov8tflite.OverlayViewIsalat
+import com.isalatapp.yolov8tflite.isalat.IsalatObjectDetector
+import com.isalatapp.yolov8tflite.isalat.OverlayViewIsalat
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 

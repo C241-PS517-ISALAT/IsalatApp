@@ -18,7 +18,7 @@
 
     </androidx.camera.view.PreviewView>
 
-    <com.isalatapp.ui.customview.OverlayView
+    <com.isalatapp.yolov8tflite.object.OverlayView
         android:id="@+id/overlay"
         android:layout_width="0dp"
         android:layout_height="0dp"

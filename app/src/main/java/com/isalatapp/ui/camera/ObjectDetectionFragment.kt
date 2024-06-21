@@ -24,7 +24,7 @@ import com.isalatapp.databinding.FragmentObjectDetectionBinding
 import com.isalatapp.yolov8tflite.BoundingBox
 import com.isalatapp.yolov8tflite.Constants.LABELS_PATH
 import com.isalatapp.yolov8tflite.Constants.MODEL_PATH
-import com.isalatapp.yolov8tflite.Detector
+import com.isalatapp.yolov8tflite.`object`.Detector
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 

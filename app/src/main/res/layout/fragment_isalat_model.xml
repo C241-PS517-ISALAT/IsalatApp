@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
-    <com.isalatapp.yolov8tflite.OverlayViewIsalat
+    <com.isalatapp.yolov8tflite.isalat.OverlayViewIsalat
         android:id="@+id/overlay"
         android:layout_width="0dp"
         android:layout_height="0dp"
