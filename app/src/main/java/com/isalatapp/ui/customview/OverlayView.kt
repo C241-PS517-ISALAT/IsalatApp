@@ -1,6 +1,7 @@
 package com.isalatapp.ui.customview
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -21,6 +22,23 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
     private var bounds = Rect()
 
+    private val paint = Paint().apply {
+        style = Paint.Style.STROKE
+        strokeWidth = 8f
+        color = Color.RED
+    }
+    private var bitmap: Bitmap? = null
+
+    fun setBitmap(bitmap: Bitmap) {
+        this.bitmap = bitmap
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        bitmap?.let {
+            canvas.drawBitmap(it, 0f, 0f, null)
+        }
+    }
     init {
         initPaints()
     }

@@ -24,9 +24,9 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        // Load the NewsFragment into the FragmentContainerView
+        // Load the MenuFragment into the FragmentContainerView
         childFragmentManager.beginTransaction().apply {
-            replace(R.id.newsFragmentContainer, NewsFragment())
+            replace(R.id.newsFragmentContainer, MenuFragment())
             commit()
         }
 

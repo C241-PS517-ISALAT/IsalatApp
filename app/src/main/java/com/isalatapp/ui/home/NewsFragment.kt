@@ -10,7 +10,7 @@ import com.isalatapp.databinding.FragmentNewsBinding
 import com.isalatapp.helper.model.NewsViewModel
 
 
-class NewsFragment : Fragment() {
+class   NewsFragment : Fragment() {
     private var _binding: FragmentNewsBinding? = null
     private val binding get() = _binding!!
     private lateinit var newsAdapter: NewsAdapter

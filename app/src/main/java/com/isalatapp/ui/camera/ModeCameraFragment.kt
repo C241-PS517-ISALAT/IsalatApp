@@ -30,11 +30,12 @@ class ModeCameraFragment : Fragment() {
         Log.d("ModeCameraFragment", "onViewCreated called")
 
         // Set default fragment to ObjectDetectionFragment
-        replaceFragment(ObjectDetectionFragment())
+        replaceFragment(IsalatModelFragment())
 
         binding.toggleButtonMode.setOnCheckedChangeListener { _, isChecked ->
             val fragment = if (isChecked) {
-                CameraXFragment()
+//                CameraXFragment()
+                IsalatModelFragment()
             } else {
                 ObjectDetectionFragment()
             }

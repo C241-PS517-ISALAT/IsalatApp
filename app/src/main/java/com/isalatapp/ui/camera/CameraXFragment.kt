@@ -3,15 +3,11 @@ package com.isalatapp.ui.camera
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.RectF
-import android.graphics.drawable.Animatable
+import android.graphics.*
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
-import androidx.fragment.app.Fragment
+import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,17 +23,25 @@ import androidx.camera.video.FileOutputOptions
 import androidx.camera.video.Quality
 import androidx.camera.video.QualitySelector
 import androidx.camera.video.Recorder
-import androidx.camera.video.Recording
 import androidx.camera.video.VideoCapture
-import androidx.camera.video.VideoRecordEvent
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
 import com.google.common.util.concurrent.ListenableFuture
 import com.isalatapp.R
 import com.isalatapp.databinding.FragmentCameraXBinding
 import com.isalatapp.ui.customview.OverlayView
+import com.isalatapp.yolov8tflite.Constants.LABELS_ISALAT
+import com.isalatapp.yolov8tflite.Constants.MODEL_ISALAT
+import org.tensorflow.lite.DataType
+import org.tensorflow.lite.Interpreter
+import org.tensorflow.lite.support.common.FileUtil
+import org.tensorflow.lite.support.image.TensorImage
+import org.tensorflow.lite.support.image.ops.ResizeOp
+import org.tensorflow.lite.support.image.ImageProcessor
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 
@@ -47,6 +51,9 @@ class CameraXFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
     private val viewModel: CameraXViewModel by viewModels()
+    private lateinit var interpreter: Interpreter
+    private lateinit var imageProcessor: ImageAnalysis
+    private lateinit var labels: List<String>
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -68,10 +75,27 @@ class CameraXFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Load labels
+        labels = FileUtil.loadLabels(requireContext(), LABELS_ISALAT)
+
+        // Load the model
+        val modelFile = FileUtil.loadMappedFile(requireContext(), MODEL_ISALAT)
+        interpreter = Interpreter(modelFile)
+
+        // Initialize image analysis
+        imageProcessor = ImageAnalysis.Builder()
+            .setTargetResolution(Size(224, 224)) // Set target resolution
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .build()
+
+        imageProcessor.setAnalyzer(ContextCompat.getMainExecutor(requireContext())) { imageProxy ->
+            processImage(imageProxy)
+        }
+
         if (!allPermissionsGranted()) {
             requestPermissionLauncher.launch(REQUIRED_PERMISSION)
             requestPermissionLauncher.launch(REQUIRED_PERMISSION_STORAGE)
-        }else {
+        } else {
             startCamera()
         }
 
@@ -100,7 +124,6 @@ class CameraXFragment : Fragment() {
         viewModel.recordingDuration.observe(viewLifecycleOwner) { duration ->
             binding.recordingDuration.text = duration
         }
-
     }
 
     override fun onDestroyView() {
@@ -118,8 +141,6 @@ class CameraXFragment : Fragment() {
         }
     }
 
-
-
     override fun onDestroy() {
         super.onDestroy()
         cameraProviderFuture?.let {
@@ -134,8 +155,6 @@ class CameraXFragment : Fragment() {
         }
     }
 
-
-
     private fun startCamera() {
         cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener(Runnable {
@@ -148,7 +167,6 @@ class CameraXFragment : Fragment() {
             }
         }, ContextCompat.getMainExecutor(requireContext()))
     }
-
 
     private fun bindPreview(cameraProvider: ProcessCameraProvider) {
         val preview = Preview.Builder().build()
@@ -165,7 +183,60 @@ class CameraXFragment : Fragment() {
         val previewView = binding.previewView
         preview.setSurfaceProvider(previewView.surfaceProvider)
 
-        cameraProvider.bindToLifecycle(this as LifecycleOwner, cameraSelector, preview, videoCapture)
+        cameraProvider.bindToLifecycle(this as LifecycleOwner, cameraSelector, preview, videoCapture, imageProcessor)
+    }
+
+    private fun processImage(imageProxy: ImageProxy) {
+        val bitmap = imageProxy.toBitmap()
+        val tensorImage = TensorImage.fromBitmap(bitmap)
+        val resizedImage = tensorImage.apply {
+            val resizeOp = ResizeOp(224, 224, ResizeOp.ResizeMethod.BILINEAR)
+            val processor = ImageProcessor.Builder().add(resizeOp).build()
+            processor.process(this)
+        }
+
+        val outputBuffer = TensorBuffer.createFixedSize(intArrayOf(1, labels.size), DataType.FLOAT32)
+        interpreter.run(resizedImage.buffer, outputBuffer.buffer.rewind())
+
+        val result = outputBuffer.floatArray
+        val detectedLabel = interpretResult(result)
+
+        binding.resultTextView.text = detectedLabel
+
+        imageProxy.close()
+    }
+
+    private fun ImageProxy.toBitmap(): Bitmap {
+        val nv21 = ByteArray(width * height * 3 / 2)
+        YuvToNv21(nv21)
+        val yuvImage = YuvImage(nv21, ImageFormat.NV21, width, height, null)
+        val out = ByteArrayOutputStream()
+        yuvImage.compressToJpeg(Rect(0, 0, width, height), 100, out)
+        val imageBytes = out.toByteArray()
+        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+    }
+
+    private fun ImageProxy.YuvToNv21(output: ByteArray) {
+        val yBuffer = planes[0].buffer
+        val uBuffer = planes[1].buffer
+        val vBuffer = planes[2].buffer
+
+        val ySize = yBuffer.remaining()
+        val uSize = uBuffer.remaining()
+        val vSize = vBuffer.remaining()
+
+        yBuffer.get(output, 0, ySize)
+        vBuffer.get(output, ySize, vSize)
+        uBuffer.get(output, ySize + vSize, uSize)
+    }
+
+    private fun interpretResult(result: FloatArray): String {
+        val maxIndex = result.indices.maxByOrNull { result[it] } ?: -1
+        return if (maxIndex != -1) {
+            labels[maxIndex]
+        } else {
+            "Label tidak ditemukan"
+        }
     }
 
     private fun captureVideo() {
@@ -228,4 +299,5 @@ class CameraXFragment : Fragment() {
         private const val REQUIRED_PERMISSION_STORAGE = Manifest.permission.WRITE_EXTERNAL_STORAGE
     }
 }
+
 
