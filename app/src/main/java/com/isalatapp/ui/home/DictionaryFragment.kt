@@ -42,6 +42,7 @@ class DictionaryFragment : Fragment() {
         }
         binding.dictionaryRecyclerView.adapter = adapter
 
+        // Tampilkan ProgressBar sebelum memulai permintaan data
         binding.progressBar.visibility = View.VISIBLE
 
         GitHubApiHelper.getGithubFiles { files ->
@@ -51,6 +52,7 @@ class DictionaryFragment : Fragment() {
                     bisindoAlphabet.add((65 + index % 26).toChar().toString() to fileUrl)
                 }
                 adapter.notifyDataSetChanged()
+                // Sembunyikan ProgressBar setelah data berhasil dimuat
                 binding.progressBar.visibility = View.GONE
             }
         }

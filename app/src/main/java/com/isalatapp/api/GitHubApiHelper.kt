@@ -4,13 +4,11 @@ package com.isalatapp.api
 import okhttp3.*
 import org.json.JSONArray
 import java.io.IOException
-import io.github.cdimascio.dotenv.dotenv
 
 object  GitHubApiHelper {
 
-    private val dotenv = dotenv()
-    private val GITHUB_TOKEN = dotenv["GITHUB_TOKEN"] ?: ""
     private const val BASE_GITHUB_API_URL = "https://api.github.com/repos/C241-PS517-ISALAT/C241-PS517-ISALAT/contents/"
+    private const val GITHUB_TOKEN = "" // Tokennya personal user github
     private val SUBFOLDERS = listOf("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z")
 
     fun getGithubFiles(callback: (List<String>) -> Unit) {
