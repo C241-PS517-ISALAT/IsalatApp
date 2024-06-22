@@ -3,11 +3,11 @@ package com.isalatapp.ui
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.isalatapp.helper.repository.UserRepository
 import com.isalatapp.api.di.Injection
 import com.isalatapp.helper.UserPreferences
 import com.isalatapp.helper.dataStore
 import com.isalatapp.helper.model.AuthViewModel
+import com.isalatapp.helper.repository.UserRepository
 
 class ViewModelFactory private constructor(
     private val userRepository: UserRepository, private val pref: UserPreferences

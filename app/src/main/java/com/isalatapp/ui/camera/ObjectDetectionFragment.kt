@@ -19,14 +19,14 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 import com.isalatapp.R
 import com.isalatapp.databinding.FragmentObjectDetectionBinding
 import com.isalatapp.yolov8tflite.BoundingBox
 import com.isalatapp.yolov8tflite.Constants.LABELS_PATH
 import com.isalatapp.yolov8tflite.Constants.MODEL_PATH
-import com.isalatapp.yolov8tflite.Detector
+import com.isalatapp.yolov8tflite.`object`.Detector
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class ObjectDetectionFragment : Fragment(), Detector.DetectorListener {
     private lateinit var binding: FragmentObjectDetectionBinding
@@ -44,7 +44,7 @@ class ObjectDetectionFragment : Fragment(), Detector.DetectorListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentObjectDetectionBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -62,7 +62,11 @@ class ObjectDetectionFragment : Fragment(), Detector.DetectorListener {
         if (allPermissionsGranted()) {
             startCamera()
         } else {
-            ActivityCompat.requestPermissions(requireActivity(), REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                REQUIRED_PERMISSIONS,
+                REQUEST_CODE_PERMISSIONS
+            )
         }
 
         bindListeners()
@@ -83,18 +87,41 @@ class ObjectDetectionFragment : Fragment(), Detector.DetectorListener {
                     detector?.setup(isGpu = isChecked)
                 }
                 if (isChecked) {
-                    buttonView.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.blue))
+                    ContextCompat.getMainExecutor(requireContext()).execute {
+                        buttonView.setBackgroundColor(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.blue
+                            )
+                        )
+                    }
                 } else {
-                    buttonView.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray))
+                    ContextCompat.getMainExecutor(requireContext()).execute {
+                        buttonView.setBackgroundColor(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.gray
+                            )
+                        )
+                    }
                 }
             }
         }
     }
 
     private fun startCamera() {
+        if (!allPermissionsGranted()) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                REQUIRED_PERMISSIONS,
+                REQUEST_CODE_PERMISSIONS
+            )
+            return
+        }
+
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener({
-            cameraProvider  = cameraProviderFuture.get()
+            cameraProvider = cameraProviderFuture.get()
             bindCameraUseCases()
         }, ContextCompat.getMainExecutor(requireContext()))
     }
@@ -109,7 +136,7 @@ class ObjectDetectionFragment : Fragment(), Detector.DetectorListener {
             .requireLensFacing(CameraSelector.LENS_FACING_BACK)
             .build()
 
-        preview =  Preview.Builder()
+        preview = Preview.Builder()
             .setTargetAspectRatio(AspectRatio.RATIO_4_3)
             .setTargetRotation(rotation)
             .build()
@@ -162,7 +189,7 @@ class ObjectDetectionFragment : Fragment(), Detector.DetectorListener {
             )
 
             preview?.setSurfaceProvider(binding.viewFinder.surfaceProvider)
-        } catch(exc: Exception) {
+        } catch (exc: Exception) {
             Log.e(TAG, "Use case binding failed", exc)
         }
     }
@@ -172,8 +199,11 @@ class ObjectDetectionFragment : Fragment(), Detector.DetectorListener {
     }
 
     private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()) {
-        if (it[Manifest.permission.CAMERA] == true) { startCamera() }
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        if (it[Manifest.permission.CAMERA] == true) {
+            startCamera()
+        }
     }
 
     override fun onDestroyView() {
@@ -182,10 +212,9 @@ class ObjectDetectionFragment : Fragment(), Detector.DetectorListener {
         cameraExecutor.shutdown() // Tutup executor
     }
 
-
     override fun onResume() {
         super.onResume()
-        if (allPermissionsGranted()){
+        if (allPermissionsGranted()) {
             startCamera()
         } else {
             requestPermissionLauncher.launch(REQUIRED_PERMISSIONS)
@@ -195,19 +224,19 @@ class ObjectDetectionFragment : Fragment(), Detector.DetectorListener {
     companion object {
         private const val TAG = "Camera"
         private const val REQUEST_CODE_PERMISSIONS = 10
-        private val REQUIRED_PERMISSIONS = mutableListOf (
+        private val REQUIRED_PERMISSIONS = mutableListOf(
             Manifest.permission.CAMERA
         ).toTypedArray()
     }
 
     override fun onEmptyDetect() {
-        requireActivity().runOnUiThread {
+        ContextCompat.getMainExecutor(requireContext()).execute {
             binding.overlay.clear()
         }
     }
 
     override fun onDetect(boundingBoxes: List<BoundingBox>, inferenceTime: Long) {
-        requireActivity().runOnUiThread {
+        ContextCompat.getMainExecutor(requireContext()).execute {
             binding.inferenceTime.text = "${inferenceTime}ms"
             binding.overlay.apply {
                 setResults(boundingBoxes)

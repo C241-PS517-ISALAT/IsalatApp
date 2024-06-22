@@ -18,12 +18,16 @@
             android:id="@+id/toggleButtonMode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textOn="@string/video_mode"
-            android:textOff="@string/detection_mode"
-            android:background="@color/blue"
+            android:textOff="@string/live_mode"
+            android:textOn="@string/detection_mode"
+            android:background="@drawable/toggle_button_background"
             android:layout_gravity="top|center"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
             android:elevation="8dp"
-            android:padding="10dp"/>
+            android:padding="10dp"
+            android:animateLayoutChanges="true"
+            android:checked="false"/>
     </FrameLayout>
+
+
 </LinearLayout>

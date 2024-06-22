@@ -55,6 +55,7 @@
                 android:orientation="vertical">
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/btn_translate"
                     android:layout_width="81dp"
                     android:layout_height="81dp"
                     app:cardCornerRadius="40.5dp">
@@ -87,6 +88,7 @@
                 android:orientation="vertical">
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/btn_object_detect"
                     android:layout_width="81dp"
                     android:layout_height="81dp"
                     app:cardCornerRadius="40.5dp">
@@ -118,6 +120,7 @@
                 android:orientation="vertical">
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/btn_dictionary"
                     android:layout_width="81dp"
                     android:layout_height="81dp"
                     app:cardCornerRadius="40.5dp">
@@ -149,6 +152,7 @@
                 android:orientation="vertical">
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/btn_news"
                     android:layout_width="81dp"
                     android:layout_height="81dp"
                     app:cardCornerRadius="40.5dp">
@@ -166,7 +170,7 @@
                     android:ellipsize="end"
                     android:fontFamily="@font/medium"
                     android:maxLines="2"
-                    android:text="News"
+                    android:text="Menu"
                     android:textAlignment="center"
                     android:textSize="14dp" />
 
@@ -185,26 +189,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/menu_feature" />
 
-    <!-- News for You section -->
+    <!-- Menu for You section -->
     <TextView
         android:id="@+id/newsForYouTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:fontFamily="@font/semibold"
-        android:text="News for You"
+        android:text="Menu for You"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/divider" />
 
-    <!-- Fragment Container for NewsFragment -->
+    <!-- Fragment Container for MenuFragment -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/newsFragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="18dp"
         android:layout_weight="1"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/newsForYouTitle" />
 

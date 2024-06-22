@@ -43,6 +43,7 @@ android {
         viewBinding = true
         mlModelBinding = true
         buildConfig = true
+        dataBinding = true
     }
 
 }
@@ -54,6 +55,8 @@ dependencies {
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.fragment.ktx)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.databinding.runtime)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -78,10 +81,14 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     //Live Data
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    //Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
     implementation(libs.camera.view)
     implementation(libs.camera.extensions)
-    implementation(libs.glide)
+    implementation (libs.recyclerview)
 
     implementation(libs.tensorflow.lite)
     implementation(libs.tensorflow.lite.support)
@@ -89,4 +96,6 @@ dependencies {
     implementation(libs.tensorflow.lite.gpu.api)
     implementation(libs.tensorflow.lite.api)
     implementation(libs.tensorflow.lite.gpu)
+    implementation(libs.dotenvKotlin)
+
 }

@@ -1,17 +1,16 @@
-package com.isalatapp.yolov8tflite
+package com.isalatapp.yolov8tflite.`object`
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
-import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.isalatapp.R
-import java.util.LinkedList
-import kotlin.math.max
+import com.isalatapp.yolov8tflite.BoundingBox
 
 class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
@@ -22,6 +21,23 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
     private var bounds = Rect()
 
+    private val paint = Paint().apply {
+        style = Paint.Style.STROKE
+        strokeWidth = 8f
+        color = Color.RED
+    }
+    private var bitmap: Bitmap? = null
+
+    fun setBitmap(bitmap: Bitmap) {
+        this.bitmap = bitmap
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        bitmap?.let {
+            canvas.drawBitmap(it, 0f, 0f, null)
+        }
+    }
     init {
         initPaints()
     }
