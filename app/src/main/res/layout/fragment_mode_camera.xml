@@ -28,6 +28,4 @@
             android:animateLayoutChanges="true"
             android:checked="false"/>
     </FrameLayout>
-
-
 </LinearLayout>
