@@ -158,8 +158,8 @@
                     app:cardCornerRadius="40.5dp">
 
                     <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_width="51dp"
+                        android:layout_height="68dp"
                         android:layout_gravity="center"
                         android:src="@drawable/news" />
                 </androidx.cardview.widget.CardView>
@@ -170,7 +170,7 @@
                     android:ellipsize="end"
                     android:fontFamily="@font/medium"
                     android:maxLines="2"
-                    android:text="Menu"
+                    android:text="News"
                     android:textAlignment="center"
                     android:textSize="14dp" />
 
@@ -196,7 +196,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:fontFamily="@font/semibold"
-        android:text="Menu for You"
+        android:text="News for You"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"

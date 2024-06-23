@@ -5,6 +5,7 @@ import com.isalatapp.helper.response.UserRecord
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface ApiService {
     @POST("users/signin")
@@ -22,8 +23,11 @@ interface ApiService {
         @Body resetPasswordRequest: UserRecord
     ): AuthResponse
 
-    @GET("profile/profile")
-    suspend fun getProfile(
+    @GET("profile")
+    suspend fun getProfile(): AuthResponse
+
+    @POST("profile")
+    suspend fun postProfile(
         @Body profileRequest: UserRecord
     ): AuthResponse
 }

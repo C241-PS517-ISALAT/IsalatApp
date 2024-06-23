@@ -1,6 +1,4 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,21 +9,21 @@
         android:id="@+id/modeCameraFragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/transparan"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:background="@color/transparan">
 
         <ToggleButton
             android:id="@+id/toggleButtonMode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textOff="@string/live_mode"
-            android:textOn="@string/detection_mode"
-            android:background="@drawable/toggle_button_background"
             android:layout_gravity="top|center"
             android:layout_marginTop="16dp"
+            android:animateLayoutChanges="true"
+            android:background="@drawable/toggle_button_background"
+            android:checked="false"
             android:elevation="8dp"
             android:padding="10dp"
-            android:animateLayoutChanges="true"
-            android:checked="false"/>
+            android:textOff="@string/live_mode"
+            android:textOn="@string/detection_mode" />
     </FrameLayout>
 </LinearLayout>

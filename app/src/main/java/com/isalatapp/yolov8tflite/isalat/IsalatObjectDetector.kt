@@ -137,14 +137,29 @@ class IsalatObjectDetector(
             val predictedLabel = labels.getOrNull(maxIndex) ?: "Unknown"
 
             // Create dummy bounding box for visualization
-            val boundingBox = BoundingBox(0.1f, 0.1f, 0.9f, 0.9f, 0.5f, 0.5f, 0.8f, 0.8f, 1.0f, maxIndex, predictedLabel)
+            val boundingBox = BoundingBox(
+                0.1f,
+                0.1f,
+                0.9f,
+                0.9f,
+                0.5f,
+                0.5f,
+                0.8f,
+                0.8f,
+                1.0f,
+                maxIndex,
+                predictedLabel
+            )
 
             inferenceTime = SystemClock.uptimeMillis() - inferenceTime
             detectorListener.onDetect(listOf(boundingBox), inferenceTime)
 
         } else {
             // Object detection
-            val output = TensorBuffer.createFixedSize(intArrayOf(1, numElements, numChannel), OUTPUT_IMAGE_TYPE)
+            val output = TensorBuffer.createFixedSize(
+                intArrayOf(1, numElements, numChannel),
+                OUTPUT_IMAGE_TYPE
+            )
             interpreter?.run(imageBuffer, output.buffer)
 
             val boundingBoxes = bestBox(output.floatArray)
@@ -175,7 +190,10 @@ class IsalatObjectDetector(
         for (i in 0 until numElements) {
             val score = array[i * numChannel + 4]
             if (score > CONFIDENCE_THRESHOLD) {
-                val clsIdx = array.copyOfRange(i * numChannel + 5, i * numChannel + numChannel).indices.maxByOrNull { array[i * numChannel + 5 + it] } ?: -1
+                val clsIdx = array.copyOfRange(
+                    i * numChannel + 5,
+                    i * numChannel + numChannel
+                ).indices.maxByOrNull { array[i * numChannel + 5 + it] } ?: -1
                 val clsName = labels.getOrNull(clsIdx) ?: continue
 
                 val cx = array[i * numChannel]
@@ -250,6 +268,7 @@ class IsalatObjectDetector(
         private val OUTPUT_IMAGE_TYPE = DataType.FLOAT32
         private const val CONFIDENCE_THRESHOLD = 0.3F
         private const val IOU_THRESHOLD = 0.5F
-        private const val MIN_BOX_SIZE = 0.1F // Minimum size of bounding box to consider (relative to image size)
+        private const val MIN_BOX_SIZE =
+            0.1F // Minimum size of bounding box to consider (relative to image size)
     }
 }

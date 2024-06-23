@@ -33,9 +33,8 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        // Load the MenuFragment into the FragmentContainerView
         childFragmentManager.beginTransaction().apply {
-            replace(R.id.newsFragmentContainer, MenuFragment())
+            replace(R.id.newsFragmentContainer, NewsFragment())
             commit()
         }
 
@@ -48,26 +47,26 @@ class HomeFragment : Fragment() {
 
         binding.apply {
             btnNews.setOnClickListener {
-                childFragmentManager.beginTransaction().apply {
-                    replace(R.id.newsFragmentContainer, NewsFragment())
+                parentFragmentManager.beginTransaction().apply {
+                    replace(R.id.fragment_container, NewsFragment())
                     commit()
                 }
             }
             btnTranslate.setOnClickListener {
-                childFragmentManager.beginTransaction().apply {
-                    replace(R.id.newsFragmentContainer, IsalatModelFragment())
+                parentFragmentManager.beginTransaction().apply {
+                    replace(R.id.fragment_container, IsalatModelFragment())
                     commit()
                 }
             }
             btnObjectDetect.setOnClickListener {
-                childFragmentManager.beginTransaction().apply {
-                    replace(R.id.newsFragmentContainer, ObjectDetectionFragment())
+                parentFragmentManager.beginTransaction().apply {
+                    replace(R.id.fragment_container, ObjectDetectionFragment())
                     commit()
                 }
             }
             btnDictionary.setOnClickListener {
-                childFragmentManager.beginTransaction().apply {
-                    replace(R.id.newsFragmentContainer, DictionaryFragment())
+                parentFragmentManager.beginTransaction().apply {
+                    replace(R.id.fragment_container, DictionaryFragment())
                     commit()
                 }
             }
@@ -84,13 +83,13 @@ class HomeFragment : Fragment() {
             user?.let {
                 val text = it.name
                 val spannableString = SpannableString("Welcome, $text")
-                val startIndex = spannableString.indexOf(text)
+                val startIndex = spannableString.indexOf(text ?: "")
                 val foregroundColorSpan =
                     ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.primary))
                 spannableString.setSpan(
                     foregroundColorSpan,
                     startIndex,
-                    startIndex + text.length,
+                    startIndex + text?.length!!,
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
                 binding.tvTitle.text = spannableString

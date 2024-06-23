@@ -18,7 +18,11 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String","AUTH_API_URL","\"https://sign-language-app-425005.et.r.appspot.com/\"")
+        buildConfigField(
+            "String",
+            "AUTH_API_URL",
+            "\"https://sign-language-app-425005.et.r.appspot.com/\""
+        )
         buildConfigField("String", "NEWS_API_KEY", "\"1d95acb225e74607a6a87efe6dd6347a\"")
         buildConfigField("String", "NEWS_API_URL", "\"https://newsapi.org/v2/\"")
     }
@@ -72,9 +76,9 @@ dependencies {
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
-    implementation (libs.androidx.camera.video)
-    implementation (libs.androidx.camera.view)
-    implementation (libs.androidx.camera.extensions)
+    implementation(libs.androidx.camera.video)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.androidx.camera.extensions)
     //Glide
     implementation(libs.glide)
     //Data Store
@@ -88,7 +92,7 @@ dependencies {
 
     implementation(libs.camera.view)
     implementation(libs.camera.extensions)
-    implementation (libs.recyclerview)
+    implementation(libs.recyclerview)
 
     implementation(libs.tensorflow.lite)
     implementation(libs.tensorflow.lite.support)
@@ -96,6 +100,6 @@ dependencies {
     implementation(libs.tensorflow.lite.gpu.api)
     implementation(libs.tensorflow.lite.api)
     implementation(libs.tensorflow.lite.gpu)
-    implementation(libs.dotenvKotlin)
 
+    implementation(libs.dotenvKotlin)
 }

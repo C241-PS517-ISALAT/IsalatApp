@@ -1,6 +1,5 @@
 package com.isalatapp.helper.model
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -20,35 +19,47 @@ import retrofit2.HttpException
  */
 class AuthViewModel(private val repository: UserRepository) : ViewModel() {
     private val _responseResult = MutableLiveData<ResultState<AuthResponse>>()
-    val responseResult: LiveData<ResultState<AuthResponse>> get() = _responseResult
+    val responseResult = _responseResult
 
-    private val _userRecord = MutableLiveData<UserRecord>()
-    val userRecord: LiveData<UserRecord> get() = _userRecord
+    private val _userProfile = MutableLiveData<UserRecord>()
+    val userProfile = _userProfile
 
     init {
         viewModelScope.launch {
-            repository.getSession().collect { userRecord ->
-                _userRecord.value = userRecord
-            }
+            fetchProfileData()
+            getSession()
         }
     }
 
-    fun editProfile(updatedUser: UserRecord): LiveData<Boolean> {
-        val result = MutableLiveData<Boolean>()
+    private suspend fun fetchProfileData() {
+        try {
+            _responseResult.value = ResultState.Loading
+            val profile = repository.getProfile()
+            profile.user?.let {
+                _userProfile.postValue(it)
+            }
+            _responseResult.value = ResultState.Success(profile)
+        } catch (e: Exception) {
+            responseResult.value = ResultState.Error(e.message ?: "Unknown error occurred")
+        }
+    }
+
+    fun updateProfile(updatedProfile: UserRecord) {
         viewModelScope.launch {
             try {
-                repository.editProfile(updatedUser) // Pass updatedUser to repository
-                result.postValue(true) // Post result as true if successful
+                _responseResult.value = ResultState.Loading
+                val response = repository.updateProfile(updatedProfile)
+                response.user?.let { userProfile ->
+                    _userProfile.postValue(userProfile)
+                }
+                _responseResult.value = ResultState.Success(response)
             } catch (e: Exception) {
-                result.postValue(false) // Post result as false if there's an error
+                responseResult.value = ResultState.Error(e.message ?: "Unknown error occurred")
             }
         }
-        return result
     }
 
-    fun getSession(): LiveData<UserRecord> {
-        return repository.getSession().asLiveData()
-    }
+    fun getSession() = repository.getSession().asLiveData()
 
     fun logout() {
         viewModelScope.launch {
@@ -56,20 +67,20 @@ class AuthViewModel(private val repository: UserRepository) : ViewModel() {
         }
     }
 
-
-    fun submitLogin(user: UserRecord, password: String) {
+    fun submitLogin(user: UserRecord) {
         viewModelScope.launch {
             try {
                 _responseResult.value = ResultState.Loading
-                val response = repository.login(email = user.email, password = password)
-                repository.saveSession(user)
+                val rememberMe = user.rememberMe
+                val response = repository.login(user)
+                val userWithRememberMe = response.user?.copy(rememberMe = rememberMe)
+                repository.saveSession(response.token!!, userWithRememberMe!!)
                 _responseResult.value = ResultState.Success(response)
             } catch (e: Exception) {
                 _responseResult.value = ResultState.Error(e.message ?: "Unknown error occurred")
             }
         }
     }
-
 
     fun submitRegister(userRecord: UserRecord) {
         viewModelScope.launch {

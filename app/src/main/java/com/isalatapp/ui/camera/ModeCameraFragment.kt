@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.widget.ToggleButton
 import androidx.fragment.app.Fragment
 import com.isalatapp.R
 import com.isalatapp.databinding.FragmentModeCameraBinding
@@ -35,7 +34,8 @@ class ModeCameraFragment : Fragment() {
         // Set default fragment to ObjectDetectionFragment
         replaceFragment(IsalatModelFragment())
         binding.toggleButtonMode.setOnCheckedChangeListener { _, isChecked ->
-            val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.toggle_button_animation)
+            val animation =
+                AnimationUtils.loadAnimation(requireContext(), R.anim.toggle_button_animation)
             binding.toggleButtonMode.startAnimation(animation)
         }
 

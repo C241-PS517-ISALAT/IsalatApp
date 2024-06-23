@@ -38,6 +38,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             canvas.drawBitmap(it, 0f, 0f, null)
         }
     }
+
     init {
         initPaints()
     }

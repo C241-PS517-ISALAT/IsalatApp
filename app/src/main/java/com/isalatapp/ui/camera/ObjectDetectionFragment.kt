@@ -127,7 +127,8 @@ class ObjectDetectionFragment : Fragment(), Detector.DetectorListener {
     }
 
     private fun bindCameraUseCases() {
-        val cameraProvider = cameraProvider ?: throw IllegalStateException("Camera initialization failed.")
+        val cameraProvider =
+            cameraProvider ?: throw IllegalStateException("Camera initialization failed.")
 
         val rotation = binding.viewFinder.display.rotation
 

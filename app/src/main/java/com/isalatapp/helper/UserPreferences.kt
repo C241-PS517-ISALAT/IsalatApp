@@ -15,29 +15,43 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 
 class UserPreferences private constructor(private val dataStore: DataStore<Preferences>) {
 
-    suspend fun saveToken(user: UserRecord) {
+    suspend fun saveToken(token: String, user: UserRecord) {
         dataStore.edit { preferences ->
-            preferences[token] = user.token.toString()
+            preferences[token_key] = token
+            preferences[name] = user.name ?: ""
+            preferences[dob] = user.dob ?: ""
+            preferences[phone] = user.phone ?: ""
             preferences[email] = user.email
-            preferences[rememberMe] = user.rememberMe
+            preferences[rememberMe_key] = user.rememberMe ?: false
         }
     }
 
-    fun getToken(): Flow<UserRecord> {
+    fun getToken(): Flow<String?> {
+        return dataStore.data.map { preferences ->
+            preferences[token_key]
+        }
+    }
+
+    fun getSession(): Flow<UserRecord> {
         return dataStore.data.map { preferences ->
             UserRecord(
-                token = preferences[token] ?: "",
                 email = preferences[email] ?: "",
-                rememberMe = preferences[rememberMe] ?: false
+                name = preferences[name] ?: "",
+                phone = preferences[phone] ?: "",
+                dob = preferences[dob] ?: "",
+                rememberMe = preferences[rememberMe_key] ?: false
             )
         }
     }
 
     suspend fun clearToken() {
         dataStore.edit { preferences ->
-            preferences.remove(token)
+            preferences.remove(token_key)
             preferences.remove(email)
-            preferences.remove(rememberMe)
+            preferences.remove(name)
+            preferences.remove(phone)
+            preferences.remove(dob)
+            preferences.remove(rememberMe_key)
         }
     }
 
@@ -45,8 +59,11 @@ class UserPreferences private constructor(private val dataStore: DataStore<Prefe
         @Volatile
         private var INSTANCE: UserPreferences? = null
         private val email = stringPreferencesKey("email")
-        private val token = stringPreferencesKey("token")
-        private val rememberMe = booleanPreferencesKey("rememberMe")
+        private val dob = stringPreferencesKey("birthday")
+        private val name = stringPreferencesKey("username")
+        private val phone = stringPreferencesKey("phone")
+        private val token_key = stringPreferencesKey("token_key")
+        private val rememberMe_key = booleanPreferencesKey("rememberMe")
         fun getInstance(dataStore: DataStore<Preferences>): UserPreferences {
             return INSTANCE ?: synchronized(this) {
                 val instance = UserPreferences(dataStore)

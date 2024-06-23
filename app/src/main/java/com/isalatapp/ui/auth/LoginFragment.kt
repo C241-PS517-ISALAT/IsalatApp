@@ -67,17 +67,11 @@ class LoginFragment : Fragment() {
     }
 
     private fun handleLogin() {
-        val email = binding.edLoginEmail.text.toString().lowercase()
+        val email = binding.edLoginEmail.text.toString()
         val password = binding.edLoginPassword.text.toString()
-
-        if (email.isNotEmpty() && password.length >= 8) {
-            val rememberMe = binding.cbxRememberMe.isChecked
-            viewModel.submitLogin(UserRecord(email = email, rememberMe = rememberMe), password)
-
-        } else {
-            Toast.makeText(requireContext(), "Please fill the form correctly", Toast.LENGTH_SHORT)
-                .show()
-        }
+        val rememberMe = binding.cbxRememberMe.isChecked
+        val userRecord = UserRecord(email = email, password = password, rememberMe = rememberMe)
+        viewModel.submitLogin(userRecord)
     }
 
 

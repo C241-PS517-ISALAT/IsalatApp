@@ -1,43 +1,48 @@
 package com.isalatapp.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AlphaAnimation
-import android.view.animation.Animation
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.isalatapp.databinding.ItemDictionaryBinding
+import com.isalatapp.R
 
 class DictionaryAdapter(
-    private val items: List<Pair<String, String>>,
-    private val itemClickListener: (String, String) -> Unit
-) : RecyclerView.Adapter<DictionaryAdapter.DictionaryViewHolder>() {
+    private val items: List<Pair<String, List<String>>>,
+    private val onClick: (String, List<String>) -> Unit
+) : RecyclerView.Adapter<DictionaryAdapter.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DictionaryViewHolder {
-        val binding = ItemDictionaryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return DictionaryViewHolder(binding)
-    }
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        private val letterTextView: TextView = view.findViewById(R.id.alphabetTextView)
+        private val imageView: ImageView = view.findViewById(R.id.alphabetImageView)
 
-    override fun onBindViewHolder(holder: DictionaryViewHolder, position: Int) {
-        val item = items[position]
-        holder.bind(item, itemClickListener)
-    }
+        fun bind(item: Pair<String, List<String>>) {
+            letterTextView.text = item.first
+            if (item.second.isNotEmpty()) {
+                Glide.with(itemView.context)
+                    .load(item.second[0])
+                    .into(imageView)
+            }
 
-    override fun getItemCount(): Int = items.size
-
-    class DictionaryViewHolder(private val binding: ItemDictionaryBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: Pair<String, String>, itemClickListener: (String, String) -> Unit) {
-            binding.alphabetTextView.text = item.first
-            Glide.with(binding.root.context)
-                .load(item.second)
-                .into(binding.alphabetImageView)
-            binding.root.setOnClickListener {
-                val animation: Animation = AlphaAnimation(0.3f, 1.0f)
-                animation.duration = 300
-                binding.root.startAnimation(animation)
-
-                itemClickListener(item.first, item.second)
+            itemView.setOnClickListener {
+                onClick(item.first, item.second)
             }
         }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_dictionary, parent, false)
+        return ViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(items[position])
+    }
+
+    override fun getItemCount(): Int {
+        return items.size
     }
 }

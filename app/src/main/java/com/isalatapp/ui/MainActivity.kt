@@ -1,5 +1,6 @@
 package com.isalatapp.ui
 
+import NewsFragment
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -11,8 +12,11 @@ import com.isalatapp.R
 import com.isalatapp.databinding.ActivityMainBinding
 import com.isalatapp.helper.model.AuthViewModel
 import com.isalatapp.ui.account.AccountFragment
+import com.isalatapp.ui.account.EditProfileFragment
 import com.isalatapp.ui.auth.LoginFragment
+import com.isalatapp.ui.camera.IsalatModelFragment
 import com.isalatapp.ui.camera.ModeCameraFragment
+import com.isalatapp.ui.camera.ObjectDetectionFragment
 import com.isalatapp.ui.home.HomeFragment
 
 class MainActivity : AppCompatActivity() {
@@ -24,10 +28,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
-//        loadFragment(LoginFragment())
-        loadFragment(HomeFragment())
-
         setupViewModel()
 
         viewModel.getSession().observe(this) { user ->
@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
                     loadFragment(LoginFragment())
                 }
 
-                user.rememberMe -> {
+                user.rememberMe == true -> {
                     loadFragment(HomeFragment())
                 }
 
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> loadFragment(HomeFragment())
-                R.id.nav_camera -> loadFragment(ModeCameraFragment())
+                R.id.nav_camera -> loadFragment(IsalatModelFragment())
                 R.id.nav_account -> loadFragment(AccountFragment())
                 else -> false
             }
@@ -83,11 +83,17 @@ class MainActivity : AppCompatActivity() {
         val currentFragment = getCurrentFragment()
         val itemId = when (currentFragment) {
             is HomeFragment -> R.id.nav_home
+            is NewsFragment -> R.id.nav_home
             is ModeCameraFragment -> R.id.nav_camera
+            is IsalatModelFragment -> R.id.nav_camera
+            is ObjectDetectionFragment -> R.id.nav_camera
             is AccountFragment -> R.id.nav_account
+            is EditProfileFragment -> R.id.nav_account
             else -> return
         }
-        binding.bottomNavigation.selectedItemId = itemId
+        if (binding.bottomNavigation.selectedItemId != itemId) {
+            binding.bottomNavigation.selectedItemId = itemId
+        }
     }
 
     fun hideBottomNavigation() {

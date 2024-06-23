@@ -5,9 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.isalatapp.R
+import com.isalatapp.api.ResultState
 import com.isalatapp.databinding.FragmentEditProfileBinding
 import com.isalatapp.helper.model.AuthViewModel
 import com.isalatapp.helper.response.UserRecord
@@ -41,55 +44,57 @@ class EditProfileFragment : Fragment() {
         binding.btnSave.setOnClickListener {
             saveProfile()
         }
-
-        observeViewModel()
-    }
-
-    private fun observeViewModel() {
-        viewModel.userRecord.observe(viewLifecycleOwner) { userRecord ->
-            userRecord?.let {
-                binding.edEditName.setText(it.name)
-                binding.edEditPhone.setText(it.phone)
-                binding.edEditBirthday.setText(it.dob)
-            }
-        }
+        val builder =
+            AlertDialog.Builder(requireContext(), R.style.TransparentDialog)
+        builder.setView(R.layout.progress_indicator)
+        val dialog: AlertDialog = builder.create()
+        observeViewModel(dialog)
     }
 
     private fun saveProfile() {
-        val name = binding.edEditName.text.toString().trim()
-        val phone = binding.edEditPhone.text.toString().trim()
-        val dob = binding.edEditBirthday.text.toString().trim()
+        val name = binding.edEditName.text.toString()
+        val phone = binding.edEditPhone.text.toString()
+        val dob = binding.edEditBirthday.text.toString()
 
-        if (name.isEmpty() || phone.isEmpty() || dob.isEmpty()) {
-            Toast.makeText(requireContext(), "All fields are required", Toast.LENGTH_SHORT)
-                .show()
-            return
-        }
-
-        val currentUser = viewModel.userRecord.value
-        if (currentUser != null) {
-            val updatedUser = UserRecord(
-                email = currentUser.email,
-                name = name,
-                phone = phone,
-                dob = dob
+        val updatedProfile = UserRecord(
+            name = name,
+            phone = phone,
+            dob = dob
+        )
+        viewModel.updateProfile(updatedProfile)
+        parentFragmentManager.beginTransaction().apply {
+            replace(
+                R.id.fragment_container,
+                AccountFragment(),
+                AccountFragment::class.java.simpleName
             )
+            commit()
+        }
+    }
 
-            binding.progressBar.visibility = View.VISIBLE // Show loading indicator
+    private fun observeViewModel(dialog: AlertDialog) {
+        viewModel.userProfile.observe(viewLifecycleOwner) { authResponse ->
+            authResponse.let { userRecord ->
+                binding.edEditName.setText(userRecord.name)
+                binding.edEditPhone.setText(userRecord.phone)
+                binding.edEditBirthday.setText(userRecord.dob)
+            }
+        }
+        viewModel.responseResult.observe(viewLifecycleOwner) { resultState ->
+            when (resultState) {
+                is ResultState.Loading -> {
+                    dialog.show()
+                }
 
-            viewModel.editProfile(updatedUser).observe(viewLifecycleOwner) { result ->
-                binding.progressBar.visibility = View.GONE // Hide loading indicator
+                is ResultState.Success -> {
+                    dialog.dismiss()
+                }
 
-                if (result) {
-                    Toast.makeText(requireContext(), "Profile Updated", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(requireContext(), "Failed to update profile", Toast.LENGTH_SHORT)
-                        .show()
+                is ResultState.Error -> {
+                    dialog.dismiss()
+                    Toast.makeText(requireContext(), resultState.error, Toast.LENGTH_SHORT).show()
                 }
             }
-        } else {
-            Toast.makeText(requireContext(), "Failed to get user details", Toast.LENGTH_SHORT)
-                .show()
         }
     }
 

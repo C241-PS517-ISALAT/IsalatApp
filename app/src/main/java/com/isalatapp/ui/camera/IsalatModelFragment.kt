@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,12 +18,12 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.isalatapp.databinding.FragmentIsalatModelBinding
 import com.isalatapp.yolov8tflite.BoundingBox
 import com.isalatapp.yolov8tflite.Constants.LABELS_ISALAT
 import com.isalatapp.yolov8tflite.Constants.MODEL_ISALAT
 import com.isalatapp.yolov8tflite.isalat.IsalatObjectDetector
-import com.isalatapp.yolov8tflite.isalat.OverlayViewIsalat
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -43,7 +42,7 @@ class IsalatModelFragment : Fragment(), IsalatObjectDetector.DetectorListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentIsalatModelBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -54,22 +53,34 @@ class IsalatModelFragment : Fragment(), IsalatObjectDetector.DetectorListener {
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         cameraExecutor.execute {
-            detector = IsalatObjectDetector(requireContext(), MODEL_ISALAT, LABELS_ISALAT, this@IsalatModelFragment)
+            detector = IsalatObjectDetector(
+                requireContext(),
+                MODEL_ISALAT,
+                LABELS_ISALAT,
+                this@IsalatModelFragment
+            )
             detector?.setup(isGpu = false) // Nonaktifkan GPU untuk sementara
         }
 
         if (allPermissionsGranted()) {
             startCamera()
         } else {
-            ActivityCompat.requestPermissions(requireActivity(), REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                REQUIRED_PERMISSIONS,
+                REQUEST_CODE_PERMISSIONS
+            )
         }
     }
 
     private fun stopObjectDetection() {
         imageAnalyzer?.clearAnalyzer()
         detector?.close()
-        ContextCompat.getMainExecutor(requireContext()).execute {
-            (binding.overlay as OverlayViewIsalat).clear()
+        activity?.runOnUiThread {
+            binding.overlay.clear()
+            ContextCompat.getMainExecutor(requireContext()).execute {
+                binding.overlay.clear()
+            }
         }
     }
 
@@ -91,7 +102,8 @@ class IsalatModelFragment : Fragment(), IsalatObjectDetector.DetectorListener {
     }
 
     private fun bindCameraUseCases() {
-        val cameraProvider = cameraProvider ?: throw IllegalStateException("Camera initialization failed.")
+        val cameraProvider =
+            cameraProvider ?: throw IllegalStateException("Camera initialization failed.")
 
         val rotation = binding.viewFinder.display.rotation
 
@@ -194,8 +206,11 @@ class IsalatModelFragment : Fragment(), IsalatObjectDetector.DetectorListener {
     }
 
     override fun onEmptyDetect() {
-        ContextCompat.getMainExecutor(requireContext()).execute {
-            (binding.overlay as OverlayViewIsalat).clear()
+        requireActivity().runOnUiThread {
+            binding.overlay.clear()
+            ContextCompat.getMainExecutor(requireContext()).execute {
+                binding.overlay.clear()
+            }
         }
     }
 
@@ -204,10 +219,11 @@ class IsalatModelFragment : Fragment(), IsalatObjectDetector.DetectorListener {
             binding.inferenceTime.text = "${inferenceTime}ms"
             val resultText = boundingBoxes.joinToString(separator = "\n") { it.clsName }
             binding.resultText.text = resultText
-            (binding.overlay as OverlayViewIsalat).apply {
+            binding.overlay.apply {
                 setResults(boundingBoxes)
                 invalidate()
             }
         }
     }
+
 }

@@ -16,7 +16,7 @@ interface UserDao {
     suspend fun insert(user: UserRecord)
 
     @Query("UPDATE userprofile SET name = :newName, dob = :newDob, phone = :newPhone WHERE email = :email")
-    suspend fun update(email: String, newName: String, newDob: String, newPhone: String)
+    suspend fun update(email: String?, newName: String?, newDob: String?, newPhone: String?)
 
     @Query("DELETE FROM userProfile")
     suspend fun delete()

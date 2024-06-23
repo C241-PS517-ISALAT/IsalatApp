@@ -32,7 +32,7 @@ class AccountFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.userRecord.observe(viewLifecycleOwner) { userRecord ->
+        viewModel.getSession().observe(viewLifecycleOwner) { userRecord ->
             if (userRecord != null) {
                 binding.tvName.text = userRecord.name
                 binding.tvEmail.text = userRecord.email
@@ -45,7 +45,7 @@ class AccountFragment : Fragment() {
         }
 
         binding.llChangePassword.setOnClickListener {
-            val currentUser = viewModel.userRecord.value
+            val currentUser = viewModel.getSession().value
             if (currentUser != null) {
                 val updatedEmail = currentUser.email
                 viewModel.resetPassword(updatedEmail)
